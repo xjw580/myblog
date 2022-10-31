@@ -8,5 +8,10 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="docsify" level="application" />
+    <orderEntry type="library" name="ga" level="application" />
+    <orderEntry type="library" name="emoji" level="application" />
+    <orderEntry type="library" name="zoom-image" level="application" />
+    <orderEntry type="library" name="disqus" level="application" />
   </component>
 </module>

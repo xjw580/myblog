@@ -1,15 +1,14 @@
 <!-- _coverpage.md -->
 
-[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-qZ6dXl8H-1637505148577)(image/icon.svg)]
+<img src="https://zergqueen.gitee.io/images/myblog/icon.svg"  alt="我思故我在"/>
 
-# docsify <small>3.5</small>
+# 两小儿辩文档 <small>3.5</small>
 
-> 一个神奇的文档网站生成器。
+> 对的对的，不对不对
 
-- 简单、轻便 (压缩后 ~21kB)
-- 无需生成 html 文件
-- 众多主题
+- 噢，对的对的，对吗？
+- 哎呀，不对，不对吗？
 
-[GitHub](https://github.com/docsifyjs/docsify/)
-[Get Started](#docsify)
+[Gitee](https://gitee.com/zergqueen) 
+[开始](md/introduction)
 

@@ -10,5 +10,5 @@
 - 哎呀，不对，不对吗？
 
 [Gitee](https://gitee.com/zergqueen) 
-[开始](md/introduction)
+[开始](#README)
 

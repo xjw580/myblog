@@ -13,5 +13,6 @@
     <orderEntry type="library" name="emoji" level="application" />
     <orderEntry type="library" name="zoom-image" level="application" />
     <orderEntry type="library" name="disqus" level="application" />
+    <orderEntry type="library" name="docsify-sidebar-collapse" level="application" />
   </component>
 </module>

@@ -1,2 +1,6 @@
 * 后端
-  * [Java](md/java.md)
+  * Java
+  * Mysql
+    * [Mysql练习题](md/Mysql练习题.md)
+* 前端
+* 项目

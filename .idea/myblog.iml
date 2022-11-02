@@ -14,5 +14,16 @@
     <orderEntry type="library" name="zoom-image" level="application" />
     <orderEntry type="library" name="disqus" level="application" />
     <orderEntry type="library" name="docsify-sidebar-collapse" level="application" />
+    <orderEntry type="library" name="gitalk" level="application" />
+    <orderEntry type="library" name="docsify-pagination" level="application" />
+    <orderEntry type="library" name="sidebar-folder" level="application" />
+    <orderEntry type="library" name="sidebar" level="application" />
+    <orderEntry type="library" name="docsify-count" level="application" />
+    <orderEntry type="library" name="docsify-progress" level="application" />
+    <orderEntry type="library" name="docsify-pagination-keyboard-helper" level="application" />
+    <orderEntry type="library" name="prism-java" level="application" />
+    <orderEntry type="library" name="prism-javascript" level="application" />
+    <orderEntry type="library" name="prism-css" level="application" />
+    <orderEntry type="library" name="prism-sql" level="application" />
   </component>
 </module>

@@ -1,7 +1,7 @@
 [下载初始化sql](https://zergqueen.gitee.io/images/myblog/tables.sql)
 1. 取得每个部门最高薪水的人员名称
 
-   ```mysql
+   ```sql
    第一步：取得每个部门最高薪水(按照部门编号分组，找出每一组最大值)
    mysql> select deptno,max(sal) as maxsal from emp group by deptno;
    +--------+---------+
@@ -34,7 +34,7 @@
 
 2. 哪些人的薪水在部门的平均薪水之上
 
-   ```mysql
+   ```sql
    第一步：找出每个部门的平均薪水
    select deptno,avg(sal) as avgsal from emp group by deptno;
    +--------+-------------+
@@ -70,7 +70,7 @@
 
 3. 取得部门中（所有人的）平均的薪水等级
 
-   ```mysql
+   ```sql
    平均的薪水等级：先计算每一个薪水的等级，然后找出薪水等级的平均值。
    
    平均薪水的等级：先计算平均薪水，然后找出每个平均薪水的等级值。
@@ -134,7 +134,7 @@
 
 4. 不准用组函数（Max ），取得最高薪水
 
-   ```mysql
+   ```sql
    第一种：sal降序，limit 1
    select ename,sal from emp order by sal desc limit 1;
    +-------+---------+
@@ -208,7 +208,7 @@
 
 5. 取得平均薪水最高的部门的部门编号
 
-   ```mysql
+   ```sql
    第一种方案：降序取第一个。
    第一步：找出每个部门的平均薪水
    	select deptno,avg(sal) as avgsal from emp group by deptno;
@@ -267,7 +267,7 @@
 
 6. 取得平均薪水最高的部门的部门名称
 
-   ```mysql
+   ```sql
    select 
    	d.dname,avg(e.sal) as avgsal 
    from 
@@ -294,7 +294,7 @@
 
 7. 求平均薪水的等级最低的部门的部门名称
 
-   ```mysql
+   ```sql
    平均薪水是800
    平均薪水是900
    那么他俩都是1级别。
@@ -366,7 +366,7 @@
 
 8. 取得比普通员工(员工代码没有在 mgr 字段上出现的) 的最高薪水还要高的领导人姓名
 
-   ```mysql
+   ```sql
    比“普通员工的最高薪水”还要高的一定是领导！
    	没毛病！！！！
    
@@ -410,7 +410,7 @@
 
 9. 取得薪水最高的前五名员工
 
-   ```mysql
+   ```sql
    select ename,sal from emp order by sal desc limit 5;
    +-------+---------+
    | ename | sal     |
@@ -427,7 +427,7 @@
 
 10. 取得薪水最高的第六到第十名员工
 
-    ```mysql
+    ```sql
     select ename,sal from emp order by sal desc limit 5, 5;
     +--------+---------+
     | ename  | sal     |
@@ -445,7 +445,7 @@
 11. 取得最后入职的 5 名员工
     日期也可以降序，升序。
 
-    ```mysql
+    ```sql
     select ename,hiredate from emp order by hiredate desc limit 5;
     
     +--------+------------+
@@ -463,7 +463,7 @@
 
 12. 取得每个薪水等级有多少员工
 
-    ```mysql
+    ```sql
     分组count
     
     第一步：找出每个员工的薪水等级
@@ -521,7 +521,7 @@
 
 13. 面试题：
 
-    ```mysql
+    ```sql
     有 3 个表 S(学生表)，C（课程表），SC（学生选课表）
     S（SNO，SNAME）代表（学号，姓名）
     C（CNO，CNAME，CTEACHER）代表（课号，课名，教师）
@@ -536,7 +536,7 @@
 
 14. 列出所有员工及领导的姓名
 
-    ```mysql
+    ```sql
     select 
     	a.ename '员工', b.ename '领导'
     from
@@ -570,7 +570,7 @@
 
 15. 列出受雇日期早于其直接上级的所有员工的编号,姓名,部门名称
 
-    ```mysql
+    ```sql
     emp a 员工表
     emp b 领导表
     a.mgr = b.empno and a.hiredate < b.hiredate
@@ -606,7 +606,7 @@
 
 16. 列出部门名称和这些部门的员工信息, 同时列出那些没有员工的部门
 
-    ```mysql
+    ```sql
     select 
     	e.*,d.dname
     from
@@ -641,7 +641,7 @@
 
 17. 列出至少有 5 个员工的所有部门
 
-    ```mysql
+    ```sql
     按照部门编号分组，计数，筛选出 >= 5
     
     select 
@@ -665,7 +665,7 @@
 
 18. 列出薪金比"SMITH" 多的所有员工信息
 
-    ```mysql
+    ```sql
     select ename,sal from emp where sal > (select sal from emp where ename = 'SMITH');
     +--------+---------+
     | ename  | sal     |
@@ -690,7 +690,7 @@
 
 19.  列出所有"CLERK"( 办事员) 的姓名及其部门名称, 部门的人数
 
-    ```mysql
+    ```sql
     select ename,job from emp where job = 'CLERK';
     +--------+-------+
     | ename  | job   |
@@ -785,7 +785,7 @@
 
 20. 列出最低薪金大于 1500 的各种工作及从事此工作的全部雇员人数
 
-    ```mysql
+    ```sql
     按照工作岗位分组求最小值。
     select job,count(*) from emp group by job having min(sal) > 1500;
     
@@ -802,7 +802,7 @@
 
 21. 列出在部门"SALES"< 销售部> 工作的员工的姓名, 假定不知道销售部的部门编号.
 
-    ```mysql
+    ```sql
     select ename from emp where deptno = (select deptno from dept where dname = 'SALES');
     
     +--------+
@@ -821,7 +821,7 @@
 
 22. 列出薪金高于公司平均薪金的所有员工, 所在部门, 上级领导, 雇员的工资等级.
 
-    ```mysql
+    ```sql
     select 
     	e.ename '员工',d.dname,l.ename '领导',s.grade
     from
@@ -857,7 +857,7 @@
 
 23.  列出与"SCOTT" 从事相同工作的所有员工及部门名称
 
-    ```mysql
+    ```sql
     select job from emp where ename = 'SCOTT';
     +---------+
     | job     |
@@ -889,7 +889,7 @@
 
 24. 列出薪金等于部门 30 中员工的薪金的其他员工的姓名和薪金.
 
-    ```mysql
+    ```sql
     select distinct sal from emp where deptno = 30;
     +---------+
     | sal     |
@@ -917,7 +917,7 @@
 
 25. 列出薪金高于在部门 30 工作的所有员工的薪金的员工姓名和薪金. 部门名称
 
-    ```mysql
+    ```sql
     select max(sal) from emp where deptno = 30;
     +----------+
     | max(sal) |
@@ -952,7 +952,7 @@
 
     没有员工的部门，部门人数是0
 
-    ```mysql
+    ```sql
     select 
     	d.deptno, count(e.ename) ecount,ifnull(avg(e.sal),0) as avgsal, ifnull(avg(timestampdiff(YEAR, hiredate, now())), 0) as avgservicetime
     from
@@ -992,7 +992,7 @@
 
 27.  列出所有员工的姓名、部门名称和工资。
 
-    ```mysql
+    ```sql
     select 
     	e.ename,d.dname,e.sal
     from
@@ -1026,7 +1026,7 @@
 
 28. 列出所有部门的详细信息和人数
 
-    ```mysql
+    ```sql
     select 
     	d.deptno,d.dname,d.loc,count(e.ename)
     from
@@ -1052,7 +1052,7 @@
 
 29. 列出各种工作的最低工资及从事此工作的雇员姓名
 
-    ```mysql
+    ```sql
     select 
     	job,min(sal) as minsal
     from
@@ -1103,7 +1103,7 @@
 
 30. 列出各个部门的 MANAGER( 领导) 的最低薪金
 
-    ```mysql
+    ```sql
     select 
     	deptno, min(sal)
     from
@@ -1126,7 +1126,7 @@
 
 31. 列出所有员工的 年工资, 按 年薪从低到高排序
 
-    ```mysql
+    ```sql
     select 
     	ename,(sal + ifnull(comm,0)) * 12 as yearsal
     from
@@ -1158,7 +1158,7 @@
 
 32. 求出员工领导的薪水超过3000的员工名称与领导
 
-    ```mysql
+    ```sql
     select 
     	a.ename '员工',b.ename '领导'
     from
@@ -1183,7 +1183,7 @@
 
 33. 求出部门名称中, 带'S'字符的部门员工的工资合计、部门人数
 
-    ```mysql
+    ```sql
     select 
     	d.deptno,d.dname,d.loc,count(e.ename),ifnull(sum(e.sal),0) as sumsal
     from
@@ -1210,6 +1210,6 @@
 
 34. 给任职日期超过 30 年的员工加薪 10%.
 
-    ```mysql
+    ```sql
     update emp set sal = sal * 1.1 where timestampdiff(YEAR, hiredate, now()) > 30;
     ```

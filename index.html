@@ -1,13 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh_CN">
 <head>
   <meta charset="UTF-8">
   <title>Document</title>
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta http-equiv='Content-Language' content='zh_CN'>
   <meta name="description" content="Description">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <link rel="shortcut icon" href="https://zergqueen.gitee.io/images/myblog/favicon.ico">
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
+  <!--侧边栏样式-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
+  <!--gitalk评论-->
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css" />
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
   <!-- 编辑 -->
   <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
 </head>
@@ -16,34 +23,90 @@
   <script>
     window.$docsify = {
         name: '技术文档', // 文档标题，会显示在侧边栏顶部
-        repo: 'https://gitee.com/zergqueen/myblog', // 右上角Github图标链接
+        repo: 'https://github.com/xjw580/myblog', // 右上角Github图标链接
         loadNavbar: true, // 默认加载 _navbar.md，作为顶部导航栏
         loadSidebar: true,
-        subMaxLevel: 3,
+        subMaxLevel: 4,
+        sidebarDisplayLevel: 1,
         coverpage: true,
+        nativeEmoji: true,
+        //搜索
         search: {
             paths: 'auto',
             placeholder: '搜索',
             noData: '找不到不代表没有',
             depth: 3,
         },
+        //复制代码
+        copyCode: {
+          buttonText : '点击复制',
+          errorText  : '错误',
+          successText: '已复制'
+        },
+        //编辑页面
         plugins: [
           EditOnGithubPlugin.create(
-            'https://gitee.com/zergqueen/myblog/edit/master/',
+            'https://github.com/xjw580/myblog/edit/master/',
             null,
-            function(file) {
-              if (file.indexOf('en') === -1) {
-                return '编辑'
-              } else {
-                return 'edit on git'
-              }
+            file => {
+              // if (file.indexOf('en') === -1) {
+              //   return '编辑'
+              // } else {
+              //   return 'edit on git'
+              // }
+              return '编辑'
             }
           )
         ],
-        sidebarDisplayLevel: 1,
-        // ga: 'G-8KJ93Q6YXK',
-        // disqus: 'zergqueenmyblog',
+        //分页
+        pagination: {
+          previousText: '上一章',
+          // or
+          nextText: {
+            '/en/': 'NEXT',
+            '/': '下一章'
+          },
+          crossChapter: true,
+          crossChapterText: true,
+        },
+        //字数统计
+        count:{
+          countable: true,
+          position: 'top',
+          margin: '10px',
+          float: 'right',
+          fontsize:'0.9em',
+          color:'rgb(90,90,90)',
+          language:'chinese',
+          localization: {
+            words: "",
+            minute: ""
+          },
+          isExpected: true
+        },
+        //阅读进度
+        progress: {
+          position: "top",
+          color: "var(--theme-color,#42b983)",
+          height: "3px",
+        },
+        //google统计
+        ga: 'G-8KJ93Q6YXK',
+        //disqus评论
+        disqus: 'zergqueenmyblog',
     }
+
+    const gitalk = new Gitalk({
+      clientID: '5fb4d51622e1cd32b6ed',
+      clientSecret: '1f7585d03bb2453eb7ede251c584ec6b735186ea',
+      repo: 'myblog',
+      owner: 'xjw580',
+      admin: [
+        'xjw580',
+      ],
+      // facebook-like distraction free mode
+      distractionFreeMode: false,
+    });
   </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
@@ -53,19 +116,26 @@
   <script src="//cdn.jsdelivr.net/npm/docsify-copy-code"></script>
   <!-- 代码高亮 -->
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-c.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-json.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-shell-session.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-python.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-http.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-java.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-javascript.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-css.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
   <!-- 谷歌统计 -->
-<!--  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>-->
-  <!-- emoji -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/emoji.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
   <!-- 图片缩放 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <!-- 评论系统 -->
 <!--  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>-->
+  <!--侧边栏折叠-->
   <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
+  <!--分页-->
+  <script src="//cdn.jsdelivr.net/npm/docsify-pagination/dist/docsify-pagination.min.js"></script>
+  <!--字数记录-->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-count@latest/dist/countable.min.js"></script>
+  <!--阅读进度-->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-progress@latest/dist/progress.min.js"></script>
+  <!--翻页快捷键-->
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination-keyboard-helper@latest/dist/bundle.js"></script>
 </body>
 </html>

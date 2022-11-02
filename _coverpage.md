@@ -2,7 +2,7 @@
 
 <img src="https://zergqueen.gitee.io/images/myblog/icon.svg"  alt="我思故我在"/>
 
-# 两小儿辩文档 <small>1.10.6</small>
+# 两小儿辩文档 <small>1.10.7</small>
 
 > 对的对的，不对不对
 

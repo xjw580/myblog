@@ -11,10 +11,6 @@
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css">
   <!--侧边栏样式-->
   <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/sidebar.min.css" />
-  <!--gitalk评论-->
-  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.css" />
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/gitalk.min.js"></script>
-  <script src="//cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js"></script>
   <!-- 编辑 -->
   <script src="//cdn.jsdelivr.net/npm/docsify-edit-on-github"></script>
 </head>
@@ -90,10 +86,13 @@
           color: "var(--theme-color,#42b983)",
           height: "3px",
         },
+        //cusdis评论
+        cusdis: {
+          host: 'https://cusdis.com',
+          appId: 'f1cb1e01-a518-497c-81f8-d37669120aa5',
+        },
         //google统计
         ga: 'G-8KJ93Q6YXK',
-        //disqus评论
-        disqus: 'zergqueenmyblog',
     }
 
     const gitalk = new Gitalk({
@@ -125,8 +124,8 @@
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
   <!-- 图片缩放 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
-  <!-- 评论系统 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/disqus.min.js"></script>
+  <!-- cusdis评论系统 -->
+  <script src="https://cusdis.com/js/cusdis.docsify.js"></script>
   <!--侧边栏折叠-->
   <script src="//cdn.jsdelivr.net/npm/docsify-sidebar-collapse/dist/docsify-sidebar-collapse.min.js"></script>
   <!--分页-->

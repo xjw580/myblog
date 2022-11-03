@@ -4,5 +4,6 @@
     - [Mysql练习题](md/back-end/mysql/Mysql练习题.md)
 - &nbsp;&nbsp;前端
 - &nbsp;&nbsp;项目
+  - [静态博客搭建](md/project/静态博客搭建.md)
 - &nbsp;&nbsp;英语
   - [语法](md/english/英语语法.md) 

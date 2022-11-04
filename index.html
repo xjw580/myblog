@@ -92,7 +92,7 @@
           appId: 'f1cb1e01-a518-497c-81f8-d37669120aa5',
         },
         //google统计里的统计ID
-        ga: 'G-F2LQQHFST6',
+        // ga: 'G-F2LQQHFST6',
     }
 
     window.CUSDIS_LOCALE = {
@@ -122,6 +122,14 @@
       distractionFreeMode: false,
     });
   </script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-F2LQQHFST6"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-F2LQQHFST6');
+  </script>
   <!-- Docsify v4 -->
   <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   <!-- 搜索插件 -->
@@ -136,7 +144,7 @@
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-css.min.js"></script>
   <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
   <!-- 谷歌统计 -->
-  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>
+<!--  <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/ga.min.js"></script>-->
   <!-- 图片缩放 -->
   <script src="//cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
   <!-- cusdis评论系统 -->

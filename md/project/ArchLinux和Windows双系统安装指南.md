@@ -956,10 +956,10 @@ redis-cli
 2. 安装其他软件
 
    ```bash
-   yay -S netease-cloud-music jetbrains-toolbox google-chrome icalingua++-git gimp typora vlc nodejs npm nginx colorpicker picgo virtualbox
+   yay -S netease-cloud-music jetbrains-toolbox google-chrome icalingua++-git gimp typora vlc nodejs npm nginx colorpicker picgo virtualbox wemeet-bin todesk-bin net-tools
    ```
 
-   分别是网易云、jetbrains盒子、chrome浏览器、QQ、图形处理软件、markdown笔记软件、视频播放软件、nodejs、npm、nginx、取色器、图床软件、虚拟机
+   分别是网易云、jetbrains盒子、chrome浏览器、QQ、图形处理软件、markdown笔记软件、视频播放软件、nodejs、npm、nginx、取色器、图床软件、虚拟机、腾讯会议、远程连接软件、网络工具包
 
 ### 3.13 忽略软件升级
 
@@ -973,7 +973,7 @@ IgnorePkg   = mariadb nginx nodejs npm docker redis
 
 ### 3.14 删除kde自带游戏
 
-```
+```tex
 yay -Rs bomber bovo granatier kajongg kanagram kapman katomic kblackbox kblocks kbounce kbreakout blinken kdiamond kfourinline kfourinline khangman kigo killbots kiriki kjumpingcube klickety kgoldrunner kmahjongg kmines knetwalk knights kolf kollision konquest kreversi ksirk ksnakeduel ksquares ksudoku kubrick lskat palapeli picmi
 klines kspaceduel knavalbattle kpat kshisen ktuberling
 ```
@@ -984,10 +984,28 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 
 ### 4.1 系统设置
 
-- 全局主题
+- Plasma视觉风格
 
   ```tex
-  McSur-light
+  Win11OS-light
+  ```
+
+  如果需要更改锁屏壁纸，到以下目录找到当前主题，然后进去更换图片，图片名不要变
+
+  ```bash
+  cd /home/zerg/.local/share/wallpapers/
+  ```
+
+- 窗口装饰元素
+
+  ```tex
+  McMojave-light
+  ```
+
+- 颜色
+
+  ```tex
+  McSurLight
   ```
 
 - 图标
@@ -996,17 +1014,45 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
   Fluent
   ```
 
+- 光标
+
+  ```tex
+  Bibata-Modern-Ice
+  ```
+
 - 欢迎屏幕
 
   ```tex
-  Arch Simple Blue
+  Monterey
   ```
 
-- 登陆屏幕
+  如果要换logo，可以去以下目录找到对应主题然后更换 contents/splash/images 文件夹里的logo.svg，注意：24英寸1080P屏幕logo尺寸为128*128显示最佳
+
+  ```bash
+  cd /home/zerg/.local/share/plasma/look-and-feel
+  ```
+
+- 登陆屏幕（SDDM）
 
   ```tex
-  WhiteSur
+  Win11OS-light
   ```
+  
+  可直接在设置里更改背景图
+  
+- 桌面特效
+
+  1. 窗口打开关闭特效
+
+     ```tex
+     Wisps [Burn-My-Windows]
+     ```
+
+  2. 弹出特效
+
+     ```tex
+     Fold popups
+     ```
 
 ### 4.2 桌面
 
@@ -1088,7 +1134,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 
 7. 找到plugins=(git)，写入
 
-   ```bash
+   ```tex
    plugins=(
    	sudo
    	git

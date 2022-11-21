@@ -685,15 +685,97 @@ sudo timedatectl set-local-rtc 1
    static routers=192.168.xxx.xxx #这里配置的是网关
    ```
 
+### 2.5 支持彩色emoji
 
+1. 安装字体
+
+   ```bash
+   sudo pacman -S noto-fonts-emoji                                     
+   ```
+
+2. 新建配置文件
+
+   ```bash
+   sudo vim /etc/fonts/local.conf
+   ```
+
+3. 写入配置文件
+
+   ```tex
+   <?xml version="1.0"?>
+   <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
+   <fontconfig>
+    <alias>
+      <family>sans-serif</family>
+      <prefer>
+        <family>Noto Sans</family>
+        <family>Noto Color Emoji</family>
+        <family>Noto Emoji</family>
+        <family>DejaVu Sans</family>
+      </prefer> 
+    </alias>
+    
+    <alias>
+      <family>serif</family>
+      <prefer>
+        <family>Noto Serif</family>
+        <family>Noto Color Emoji</family>
+        <family>Noto Emoji</family>
+        <family>DejaVu Serif</family>
+      </prefer>
+    </alias>
+    
+    <alias>
+     <family>monospace</family>
+     <prefer>
+       <family>Noto Mono</family>
+       <family>Noto Color Emoji</family>
+       <family>Noto Emoji</family>
+       <family>DejaVu Sans Mono</family>
+      </prefer>
+    </alias>
+   </fontconfig>
+   ```
+
+4. 刷新
+
+   ```bash
+   fc-cache
+   ```
+
+5. 重启
 
 ## 3 常用软件
 
 ### 3.1 安装输入法
 
+> 以下输入法只能任选一安装
+
    - 搜狗输入法
 
-     安装后不生效，知道的小伙伴说一下
+     1. 安装
+
+        ```bash
+        yay -S fcitx fcitx-qt5 fcitx-configtool fcitx-qt4 qtwebkit fcitx-sogoupinyin
+        ```
+
+     2. 配置 ~/.pam_environment 并写入
+
+        ```bash
+        GTK_IM_MODULE DEFAULT=fcitx
+        QT_IM_MODULE  DEFAULT=fcitx
+        XMODIFIERS  DEFAULT=\@im=fcitx
+        ```
+
+     3. 重启
+
+     4. 终端打开fcitx-configtool
+
+     5. 点击 “+” 号，取消勾选 Only show current language，找到 Sogou Pinyin 并添加
+
+        ![da27cf3193bad5a83d3942047bf4ba4c.png](https://cdn-img.limstash.com/images/2020/04/20/da27cf3193bad5a83d3942047bf4ba4c.png)
+
+     
 
    - 百度输入法
 
@@ -982,7 +1064,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 
 ## 4 美化
 
-### 4.1 系统设置
+### 4.1 主题
 
 - Plasma视觉风格
 
@@ -990,11 +1072,13 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
   Win11OS-light
   ```
 
-  如果需要更改锁屏壁纸，到以下目录找到当前主题，然后进去更换图片，图片名不要变
+  ~~如果需要更改锁屏壁纸，到以下目录找到当前主题，然后进去更换图片，图片名不要变~~
 
   ```bash
   cd /home/zerg/.local/share/wallpapers/
   ```
+
+  可直接在设置里改锁屏壁纸，老瞎眼没看见
 
 - 窗口装饰元素
 

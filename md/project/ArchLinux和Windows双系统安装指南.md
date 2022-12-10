@@ -629,10 +629,32 @@ spectrwm，xmonad，sway的：
 
    ![image-20221117213540562](https://zergqueen.gitee.io/images/myblog/Screenshot_20221117_213532.png)
 
-3. 编辑fstab
+3. 获取UUID
+
+   ```bash
+   ls -l /dev/disk/by-uuid
+   ```
+
+4. 编辑fstab
 
    ```bash
    vim /etc/fstab
+   ```
+
+   ```tex
+   UUID=EE90575D90572B7B                       /run/media/zerg/Data    ntfs   rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro   0 0 
+   /swapfile                                   none                    swap   defaults                                                                                                0 0 
+   
+   UUID=3ECC3D18CC3CCBC1                       /run/media/zerg/Soft    ntfs   rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro   0 0 
+   /swapfile                                   none                    swap   defaults                                                                                                0 0 
+   
+   UUID=562EA87D2EA857AF                       /run/media/zerg/Win     ntfs   rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro   0 0 
+   /swapfile                                   none                    swap   defaults                                                                                                0 0 
+   
+   #UUID=f46791cb-0393-42a5-b0db-ecc30f1739a0                      /run/media/zerg/Ldata    ext4   rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro   0 0
+   #/swapfile                                   none                   swap   defaults                                                                                                0 0
+   
+   UUID=f46791cb-0393-42a5-b0db-ecc30f1739a0   /run/media/zerg/Ldata   ext4   defaults
    ```
 
    ![Screenshot_20221117_213835.png](https://zergqueen.gitee.io/images/myblog/Screenshot_20221117_213835.png)
@@ -744,6 +766,28 @@ sudo timedatectl set-local-rtc 1
    ```
 
 5. 重启
+
+### 2.6 配置VMware
+
+1. Could not connect ‘Ethernet0‘ to virtual network ‘/dev/vmnet0‘
+
+   ```bash
+   sudo modprobe vmnet && sudo vmware-networks --start
+   ```
+
+   ```bash
+   sudo systemctl start vmware-networks.service
+   ```
+
+2. 还是没有网络
+
+   ![](https://img-blog.csdnimg.cn/a6d9e86bfee54768b8d2786860f5a139.png)
+
+   ![](https://img-blog.csdnimg.cn/5497320a08284a0f826ddd0ab728babf.png)
+
+   ![](https://img-blog.csdnimg.cn/e4df749a59ec4a75aca24a544fc0a278.png)
+
+
 
 ## 3 常用软件
 

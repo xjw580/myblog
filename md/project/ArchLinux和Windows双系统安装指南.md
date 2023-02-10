@@ -872,6 +872,8 @@ sudo timedatectl set-local-rtc 1
 
    6. 配置proxychains
 
+      > 如果是全局代理可以忽略此步，vray2A是全局代理
+
       ```bash
       sudo vim /etc/proxychains.conf 
       ```
@@ -1113,7 +1115,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 - Plasma视觉风格
 
   ```tex
-  Win11OS-light
+  McSur-light
   ```
 
   ~~如果需要更改锁屏壁纸，到以下目录找到当前主题，然后进去更换图片，图片名不要变~~
@@ -1127,7 +1129,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 - 窗口装饰元素
 
   ```tex
-  McMojave-light
+  Aritim-Light
   ```
 
 - 颜色
@@ -1139,7 +1141,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 - 图标
 
   ```tex
-  Fluent
+  Tela
   ```
 
 - 光标
@@ -1163,7 +1165,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
 - 登陆屏幕（SDDM）
 
   ```tex
-  Win11OS-light
+  McSur-light
   ```
   
   可直接在设置里更改背景图
@@ -1173,7 +1175,7 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
   1. 窗口打开关闭特效
 
      ```tex
-     Wisps [Burn-My-Windows]
+     缩放
      ```
 
   2. 弹出特效
@@ -1211,6 +1213,8 @@ klines kspaceduel knavalbattle kpat kshisen ktuberling
      ```
 
    - Resources Monitor folk 资源监控
+   
+   - Weather Widget 2
 
 ### 4.3 终端
 

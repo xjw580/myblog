@@ -1,5 +1,6 @@
 - &nbsp;&nbsp;后端
   - Java
+    - [JavaFX笔记](md/back-end/java/JavaFX笔记.md)
   - Mysql
     - [Mysql练习题](md/back-end/mysql/Mysql练习题.md)
 - &nbsp;&nbsp;前端

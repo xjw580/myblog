@@ -1437,6 +1437,7 @@ stage.initStyle(StageStyle.TRANSPARENT);
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<!--expandedPane设置启动时打开的TitlePane-->
 <Accordion maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/19">
     <panes>
         <TitledPane animated="false" text="untitled 1">

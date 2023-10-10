@@ -117,5 +117,5 @@
 
 3. 利用Maven插件打包
 
-   ![Screenshot_20231010_183656](https://gitee.com/zergqueen/images/raw/master/myblog/202310101838518.png)
+   ![Screenshot_20231010_183656](https://zergqueen.gitee.io/images/myblog/202310101838518.png)
 

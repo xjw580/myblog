@@ -9,3 +9,4 @@
 - &nbsp;&nbsp;项目
   - [静态博客搭建](md/project/静态博客搭建.md)
   - [ArchLinux和Windows双系统安装指南](md/project/ArchLinux和Windows双系统安装指南.md)
+  - [炉石传说脚本](md/project/炉石传说脚本.md)

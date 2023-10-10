@@ -1,11 +1,11 @@
 - &nbsp;&nbsp;后端
   - Java
     - [JavaFX笔记](md/back-end/java/JavaFX笔记.md)
+    - [SpringBoot集成JavaFX](md/back-end/java/SpringBoot集成JavaFX.md)
+    - [打jar瘦包](md/back-end/java/打jar瘦包.md)
   - Mysql
     - [Mysql练习题](md/back-end/mysql/Mysql练习题.md)
 - &nbsp;&nbsp;前端
 - &nbsp;&nbsp;项目
   - [静态博客搭建](md/project/静态博客搭建.md)
   - [ArchLinux和Windows双系统安装指南](md/project/ArchLinux和Windows双系统安装指南.md)
-- &nbsp;&nbsp;英语
-  - [语法](md/english/英语语法.md) 

@@ -1,21 +1,61 @@
 ## 一、架构图
 
+> 在**JavaFX**中，**Stage**是应用程序窗口，其中包含称为**Scene**的空间。 **Scene**包含界面的组件，如`Button`，`Text`，…或容器。
+
 ![architecture](https://zergqueen.gitee.io/images/factorio/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20230203125846.png)
 
-在**JavaFX**中，**Stage**是应用程序窗口，其中包含称为**Scene**的空间。 **Scene**包含界面的组件，如`Button`，`Text`，…或容器。
+## 二、Hello,World
 
-
-
-JavaFX主要包含两种写法：
+**JavaFX包含两种写法：**
 
 1. 纯Java代码
-2. Fxml + Css + Java controller（本笔记按照这种方式记录）
 
+2. Fxml +  Java controller（可以使用Scene Builder快速创建界面，本笔记按照这种方式记录）
 
+    ```java
+    public class ApplicationDemo extends Application {
+    
+        public static void main(String[] args) {
+            launch(args);
+        }
+    
+        @Override
+        public void start(Stage primaryStage) throws IOException {
+            Scene scene = new Scene(FXMLLoader.load(getClass().getResource("demo.fxml")));
+            primaryStage.setScene(scene);
+            primaryStage.show();
+        }
+    }
+    ```
 
-##  二、常用方法
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    
+    <?import javafx.scene.control.Label?>
+    <?import javafx.scene.layout.AnchorPane?>
+    <AnchorPane xmlns="http://javafx.com/javafx"
+                xmlns:fx="http://javafx.com/fxml"
+                fx:controller="club.xiaojiawei.controls.DemoController"
+                stylesheets="@css/demo.css"
+                prefHeight="400.0" prefWidth="600.0">
+        <Label fx:id="demo" text="Hello，world"/>
+    </AnchorPane>
+    ```
 
-### Stage stage
+    ```java
+    public class DemoController implements Initializable {
+        @FXML
+        private Label demo;
+        @Override
+        public void initialize(URL url, ResourceBundle resourceBundle) {
+            
+        }
+    }
+    ```
+
+    
+
+##  三、Stage
 
 - 设置窗口标题
 
@@ -95,6 +135,41 @@ JavaFX主要包含两种写法：
   stage.setAlwaysOnTop(true);
   ```
 
+  **Linux下的解决办法：使用Swing套壳Javafx创建永久窗口**
+
+  ```xml
+  <dependency>
+     <groupId>org.openjfx</groupId>
+     <artifactId>javafx-swing</artifactId>
+     <version>${javafx-version}</version>
+  </dependency>
+  ```
+
+  ```java
+  public static AtomicReference<JFrame> createAlwaysTopWindowFrame(String frameTitle, Scene scene, int frameWidth, int frameHeight){
+       AtomicReference<JFrame> atomFrame = new AtomicReference<>();
+  //        异步，所以用返回原子类
+       SwingUtilities.invokeLater(() -> {
+           try {
+               JFrame frame = new JFrame(frameTitle);
+               frame.setIconImage(new ImageIcon(Objects.requireNonNull(FrameUtil.class.getResourceAsStream(ScriptStaticData.SCRIPT_ICON_PATH)).readAllBytes()).getImage());
+               frame.setSize(frameWidth, frameHeight);
+               Rectangle2D bounds = Screen.getPrimary().getBounds();
+               frame.setLocation((int) (bounds.getWidth() - frameWidth), (int) (bounds.getHeight() - frameHeight) >> 1);
+               final JFXPanel fxPanel = new JFXPanel();
+               frame.add(fxPanel);
+               frame.setAlwaysOnTop(true);
+               frame.setVisible(true);
+               Platform.runLater(() -> fxPanel.setScene(scene));
+               atomFrame.set(frame);
+           } catch (IOException e) {
+               throw new RuntimeException(e);
+           }
+       });
+       return atomFrame;
+   }
+  ```
+
 - 设置窗口大小和位置
 
   ```java
@@ -159,122 +234,91 @@ JavaFX主要包含两种写法：
      
      
 
-### Platform
+## 四、Node
 
-- JavaFX 应用程序终止
-
-  ```java
-  Platform.exit();
-  ```
-
-- 表示系统是否支持StageStyle.UNFIED
-
-  ```java
-  Platform.isSupported(UNIFIED_WINDOW)
-  ```
-
-- 在某些时候在 JavaFX 应用程序线程上运行指定的 Runnable，单线程
-
-  > [多线程在这](####JavaFX多线程)
-
-  ```java
-  Platform.runLater(() -> {
-      stage.setHeight(500);
-  });
-  ```
-
-- 关闭所有窗口程序是否跟着关闭，默认为true
-
-  ```java
-  Platform.setImplicitExit(false);
-  ```
-
-  
-
-### Node node
+### Node
 
 - 指定坐标是否有节点（只检测node左上角）
 
-  ```java
-  node.contains(0， 0)
-  ```
+    ```java
+    node.contains(0， 0)
+    ```
 
 - 设置位置大小
 
-  ```java
-  node.setLayoutX();
-  node.setLayoutY();
-  node.setPrefHeight();
-  node.setPrefWidth();
-  ```
+    ```java
+    node.setLayoutX();
+    node.setLayoutY();
+    node.setPrefHeight();
+    node.setPrefWidth();
+    ```
 
 - 添加监听器
 
-  1. 自子向父传递
+    1. 自子向父传递
 
-     ```java
-     node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-         if (MouseButton.PRIMARY == event.getButton()){
-             System.out.println("是左键");
-         }
-     });
-     ```
+        ```java
+        node.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (MouseButton.PRIMARY == event.getButton()){
+                System.out.println("是左键");
+            }
+        });
+        ```
 
-  2. 自父向子传递
+    2. 自父向子传递
 
-     ```java
-     node.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-         if (MouseButton.PRIMARY == event.getButton()){
-             System.out.println("是左键");
-         }
-     });
-     ```
+        ```java
+        node.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (MouseButton.PRIMARY == event.getButton()){
+                System.out.println("是左键");
+            }
+        });
+        ```
 
-  3. addEventFilter的简单写法
+    3. addEventFilter的简单写法
 
-     ```java
-     node.setOnMouseClicked(event -> {});
-     node.setOnKeyPressed(event -> {});
-     ```
+        ```java
+        node.setOnMouseClicked(event -> {});
+        node.setOnKeyPressed(event -> {});
+        ```
 
 - 设置节点方向
 
-  ```java
-  node.setNodeOrientation(NodeOrientation.INHERIT);
-  ```
-  
+    ```java
+    node.setNodeOrientation(NodeOrientation.INHERIT);
+    ```
+
 - 获取bound
 
-  - getLayoutBounds()
+    - getLayoutBounds()
 
-    > 以自身为基准，除去边框
-  
-  - getBoundsInLocal()
-  
-    > 以自身为基准，包含边框
-  
-  - getBoundsInParent()
-  
-    > 以父节点为基准，包含边框
-  
+        > 以自身为基准，除去边框
+
+    - getBoundsInLocal()
+
+        > 以自身为基准，包含边框
+
+    - getBoundsInParent()
+
+        > 以父节点为基准，包含边框
+
 - 添加用户数据
 
-  1. 只能设置一个，后设置的会覆盖前设置的
+    1. 只能设置一个，后设置的会覆盖前设置的
 
-     ```java
-     node.setUserData();
-     node.getUserData();
-     ```
+        ```java
+        node.setUserData();
+        node.getUserData();
+        ```
 
-  2. 能设置多个，类似map
+    2. 能设置多个，类似map
 
-     ```java
-     node.getProperties()
-     ```
+        ```java
+        node.getProperties()
+        ```
 
-  
 
-### Parent parent
+### Parent
 
 > Parent继承了Node
 
@@ -301,829 +345,8 @@ JavaFX主要包含两种写法：
      });
      ```
 
-     
 
-### Screen
-
-- 获取主屏幕信息
-
-  ```java
-  Screen.getPrimary() 
-  ```
-
-- 获取所有屏幕信息
-
-  ```java
-  Screen.getScreens()
-  ```
-
-
-
-### 剪切板
-
-```java
-Clipboard systemClipboard = Clipboard.getSystemClipboard();
-KeyCodeCombination keyCodeCombination = new KeyCodeCombination(KeyCode.V, KeyCodeCombination.CONTROL_ANY);
-scene.getAccelerators().put(keyCodeCombination, () -> {
-//            获取剪切板内容
-    System.out.println(systemClipboard.getString());
-    List<File> files = systemClipboard.getFiles();
-    for (File file : files) {
-        System.out.println(file.getAbsolutePath());
-    }
-    System.out.println(systemClipboard.getImage());
-});
-//        放入内容到剪切板
-ClipboardContent clipboardContent = new ClipboardContent();
-clipboardContent.putString("hello");
-systemClipboard.setContent(clipboardContent);
-//        清空剪切板
-systemClipboard.clear();
-```
-
-
-
-### 文件窗口
-
-```java
-public class FileComponentController {
-
-    @FXML
-    protected void select(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择单个文件");
-        fileChooser.setInitialDirectory(new File("/home/zerg/Downloads/chrome"));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("图片", "*.jpg", "*.png"),
-                new FileChooser.ExtensionFilter("视频", "*.mkv", "*.mp4")
-        );
-        File chooseFile = fileChooser.showOpenDialog(new Stage());
-        System.out.println(chooseFile == null? "" : chooseFile.getAbsolutePath());
-    }
-    @FXML
-    protected void multipleSelect(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择多个文件");
-        fileChooser.setInitialDirectory(new File("/home/zerg/Downloads/chrome"));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("图片", "*.jpg", "*.png"),
-                new FileChooser.ExtensionFilter("视频", "*.mkv", "*.mp4")
-        );
-        List<File> chooseFiles = fileChooser.showOpenMultipleDialog(new Stage());
-        System.out.println(chooseFiles == null? "" : chooseFiles.size());
-    }
-
-    @FXML
-    protected void saveFile(){
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("保存文件");
-        fileChooser.setInitialDirectory(new File("/home/zerg/Desktop"));
-        File file = fileChooser.showSaveDialog(new Stage());
-        if (file == null){
-            return;
-        }
-        try(FileWriter fileWriter = new FileWriter(file)) {
-            fileWriter.write("你好");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @FXML
-    protected void dirsSelect(){
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("目录选择");
-        File file = directoryChooser.showDialog(new Stage());
-        System.out.println(file == null? "" : file.getAbsolutePath());
-    }
-}
-```
-
-
-
-### 监听器
-
-> 所有带property的属性都可以添加监听器
-
-1. **文本框文字改变监听器**
-
-   ```java
-   password.textProperty().addListener((observable, oldValue, newValue) -> {
-   	System.out.println(observable.getValue());
-   });
-   ```
-
-2. **文本框选择文字监听器**
-
-   ```java
-   password.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
-   	System.out.println(observable.getValue());
-   });
-   ```
-
-3. **集合监听器**
-
-   ```java
-   //重要!!!重写call方法可以监听property内部值的更新，call方法返回的Observable数组里的property的值的改变可以被监听到
-   SimpleListProperty<SimpleStringProperty> list = new SimpleListProperty<>(FXCollections.observableArrayList(param -> {
-       System.out.println("call");
-       return new Observable[]{param};
-   }));
-   list.addListener((ListChangeListener<SimpleStringProperty>) c -> {
-       System.out.println("c:" + c);
-       while (c.next()){
-           System.out.println("wasUpdated:" +c.wasUpdated());
-       }
-   });
-   list.addListener((observable, oldValue, newValue) -> {
-       System.out.println("newValue:" + newValue);
-   });
-   SimpleStringProperty s1 = new SimpleStringProperty("hello");
-   list.add(s1);
-   System.out.println();
-   s1.set("world");
-   System.out.println();
-   list.remove(0);
-   ```
-
-4. **键盘监听器**
-
-   > 判断是否是指定键
-
-   ```java
-   KeyCode.A.getName().equals(event.getCode().getName());
-   event.getCharacter//用于获取中文状态时的输入
-   ```
-
-   > 作用在输入框的监听器
-
-   ```java
-   setOnKeyTyped();
-   ```
-
-   > 某些无法获取焦点的控件可以通过监听鼠标点击然后强制获得焦点来监听键盘
-
-   ```java
-   requestFocus();
-   ```
-
-5. **鼠标监听器**
-
-   ```java
-   scene.setOnMouseClicked(event -> {
-   //            alt建是否按下
-       System.out.println(event.isAltDown());
-   //             点击次数
-       System.out.println(event.getClickCount());
-   //            右键是否按下
-       System.out.println(event.isSecondaryButtonDown());
-   });
-   ```
-
-6. **鼠标拖拽监听器**
-
-   - MouseDragOver
-
-     > 在node内按住左键且在node内移动时触发，**需要提前调用startFullDrag()**
-
-   - MouseDragReleased
-
-     > 在node内按住左键且释放左键时触发，**需要提前调用startFullDrag()**
-
-   - MouseDragEntered
-
-     > 在node内按住左键第一次移动时时触发，**需要提前调用startFullDrag()**
-
-   - MouseDragExited
-
-     > 在node内按住左键然后离开node或在node内释放左键时触发，**需要提前调用startFullDrag()**
-
-   - MouseDragged
-
-     > 在node内按住左键，然后只要移动且左键没释放就触发
-
-   ```java
-   @FXML
-   private Button dragButton;
-   //在目标内开始拖拽时调用，调用一次。如果调用了event.setDragDetect(true)则不需要拖拽
-   @FXML
-   protected void onDragDetected(MouseEvent event){
-       System.out.println("onDragDetected");
-    //使用此节点作为手势源启动完整的按下-拖动-释放手势
-       dragButton.startFullDrag();
-   }
-   
-   /**
-    * 配合startFullDrag()才能生效,onMouseDragReleased、onMouseDragEntered、onMouseDragExited也一样
-    * @param event
-    */
-   @FXML
-   protected void onMouseDragOver(MouseEvent event){
-       System.out.println("onMouseDragOver");
-   }
-   ```
-
-7. **拖拽监听器**
-
-   - OnDragDetected
-
-     > 定义在检测到拖动手势时要调用的函数。这是开始拖放操作的正确位置。
-
-   - OnDragDone
-
-     > 当此节点被拖拽后调用
-
-   - OnDragDropped
-
-     > 当拖拽东西到此节点里释放，**需要提前设置传输模式**，event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
-
-   - OnDragEntered
-
-     > 当拖拽东西到此节点里时触发，此后在节点内移动不会再次触发，除非移出节点外又进来
-
-   - OnDragExited
-
-     > 当拖拽东西到此节点里释放或离开此节点时触发
-
-   - OnDragOver
-
-     > 当拖拽东西到此节点里移动触发
-
-8. **鼠标监听范围**
-
-   > 将范围由实体部分提升至占用部分，圆的占用部分为外接矩形
-
-   ```java
-   node.setPickOnBounds(true)
-   ```
-
-9. **阻值冒泡**
-
-   ```java
-   node.setMouseTransparent(true);
-   ```
-
-
-
-
-### 绑定
-
-> 对Property进行绑定，返回一个Binding
-
-- 单向绑定
-
-  > 注意：集合的单向绑定相当于双向绑定
-
-  ```java
-  property1.bind(property2)
-  ```
-
-- 双向绑定
-
-  ```java
-  property1.bindBiderectional(property2)
-  ```
-
-- 自绑定
-
-  ```java
-  SimpleIntegerProperty simpleIntegerProperty = new SimpleIntegerProperty(10);
-  IntegerBinding integerBinding = Bindings.createIntegerBinding(() -> {
-      if (simpleIntegerProperty.get() == 1) {
-          return 250;
-      } else if (simpleIntegerProperty.get() == 2) {
-          return 260;
-      }
-      return 0;
-  }, simpleIntegerProperty);
-  integerBinding.addListener((observable, oldValue, newValue) -> {
-      System.out.println("newValue:" + newValue);
-  });
-  simpleIntegerProperty.set(1);
-  ```
-
-- 嵌套绑定
-
-  ```java
-  Student student = new Student();
-  Address address = new Address();
-  address.setCity("changsha");
-  address.setProvince("hunan");
-  student.setAddress(address);
-  student.setName("lisi");
-  SimpleObjectProperty<Student> objectProperty = new SimpleObjectProperty<>(student);
-  StringBinding stringBinding = Bindings.selectString(objectProperty, "address", "province");
-  stringBinding.addListener((observable, oldValue, newValue) -> {
-      System.out.println("newValue:" + newValue);
-  });
-  address.setProvince("beijing");
-  ```
-
-  ```java
-  public class Student {
-      private String name;
-  
-      private final SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
-  
-      public String getName() {
-          return name;
-      }
-  
-      public void setName(String name) {
-          this.name = name;
-      }
-  
-      public Address getAddress() {
-          return address.get();
-      }
-  
-      public void setAddress(Address address) {
-          this.address.set(address);
-      }
-  //	必须    
-      public SimpleObjectProperty<Address> addressProperty(){
-          return address;
-      }
-  }
-  ```
-
-  ```java
-  public class Address {
-      private final SimpleStringProperty province = new SimpleStringProperty();
-  
-      private String city;
-  
-      public String getProvince() {
-          return province.get();
-      }
-  
-      public void setProvince(String province) {
-          this.province.set(province);
-      }
-  
-      public String getCity() {
-          return city;
-      }
-  
-      public void setCity(String city) {
-          this.city = city;
-      }
-  //	必须
-      public SimpleStringProperty provinceProperty(){
-          return province;
-      }
-  }
-  ```
-
-- 绑定计算
-
-  > 相当于vue里的计算属性
-  >
-  > 当a后者b发生改变时，c的值会发生改变。
-
-  ```java
-  SimpleIntegerProperty a = new SimpleIntegerProperty(1);
-  SimpleIntegerProperty b = new SimpleIntegerProperty(1);
-  NumberBinding c = a.add(b);//还有subtract()、divide()、multiply()、negate()、greaterThan()、lessThan()等方法
-  c.addListener((observable, oldValue, newValue) -> {
-      System.out.println("newValue:" + newValue);
-  });
-  ```
-
-- 自定义绑定器Binding
-
-  ```java
-  public class MyIntegerBinding extends IntegerBinding{
-  
-      private final SimpleIntegerProperty simpleIntegerProperty = new SimpleIntegerProperty();
-  
-      public MyIntegerBinding(int value) {
-          simpleIntegerProperty.set(value);
-      }
-  
-      @Override
-      protected int computeValue() {
-          return simpleIntegerProperty.get() + 25;
-      }
-  }
-  
-  MyIntegerBinding myIntegerBinding = new MyIntegerBinding(19);
-  myIntegerBinding.addListener((observable, oldValue, newValue) -> {});
-  new SimpleIntegerProperty().bind(myIntegerBinding);
-  ```
-
-
-
-
-### 自定义转换器
-
-> 转换器里的toString方法返回的值会经由cellFactory的updteTtem方法进行加工改造然后呈现到界面上
-
-```xml
-<ChoiceBox layoutX="40" layoutY="30" BorderPane.alignment="TOP_RIGHT" fx:id="choice">
-    <converter>
-        <StudentConverter/>
-    </converter>
-    <Student fx:value="zerg"/>
-    <Student fx:value="queen"/>
-    <Student fx:value="jack"/>
-</ChoiceBox>
-```
-
-```java
-public class StudentConverter extends StringConverter<Student> {
-    @Override
-    public String toString(Student object) {
-        return object == null? "" : object.getSimpleName();
-    }
-
-    @Override
-    public Student fromString(String string) {
-        Student student = new Student();
-        student.setName(string);
-        return student;
-    }
-}
-```
-
-
-
-### 加工器cellFactory（Callback）
-
-> 将由转换器返回的值加工改造呈现到界面
-
-```xml
-<ComboBox>
-    <cellFactory>
-        <MyCallback/>
-    </cellFactory>
-    <items>
-        <FXCollections fx:factory="observableArrayList">
-            <String fx:value="李四"/>
-        </FXCollections>
-    </items>
-</ComboBox>
-```
-
-```java
-public class MyCallback<P, T> implements Callback<ListView<P>, ListCell<String>> {
-
-    @Override
-    public ListCell<String> call(ListView<P> param) {
-        return new ListCell<>(){
-//                通过setGraphic方法将加工改造后的东西呈现到界面            
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                this.setGraphic(new Button(item));
-                super.updateItem(item, empty);
-            }
-        };
-    }
-}
-```
-
-![cellfactory](https://zergqueen.gitee.io/images/myblog/javafx/cellfactory.png)
-
-
-
-### ListCell
-
-四种特殊自带样式，[在这里](####ListView)
-
-> 自定义ListCell，可以通过重写updateItem、startEdit、commitEdit、cancelEdit等方法实现。
-
-
-
-### 其他
-
-#### 设置占位符
-
-> 当没有其他东西时显示
-
-```xml
-<ComboBox>
-    <placeholder>
-        没有东西呢！
-    </placeholder>
-</ComboBox>
-```
-
-#### managed、visible、opacity对比
-
-> managed为false表示此控件不受父类组件控制了，其占用的空间也会让出来，然后也看不见了。visble和opacity都不会腾出空间
-
-
-
-#### 创建新光标
-
-> Cursor.cursor()需要一个绝对路径
-
-```java
-Cursor.cursor(Objects.requireNonNull(getClass().getResource("images/archlinux.png")).toExternalForm())
-```
-
-
-
-#### 打开网址
-
-> 用默认浏览器打开网址（getHostServices()是Application类的实例方法）
-
-```java
-getHostServices().showDocument("xiaojiawei.club");
-```
-
-
-
-#### 添加快捷键
-
-1. 绑定到按键（Linux上无法生效）
-
-   ```java
-   Button button = new Button();
-   button.setOnAction(event -> System.out.println("hello"));
-   scene.addMnemonic(new Mnemonic(button , new KeyCodeCombination(KeyCode.K, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)));
-   ```
-
-2. 不绑定到按键（推荐）
-
-   ```java
-   scene.getAccelerators().put(new KeyCodeCombination(KeyCode.K, KeyCombination.CONTROL_DOWN), () -> {
-   	System.out.println("hello");
-   });
-   ```
-
-3. 绑定到按键的第二种写法
-
-   ```java
-   scene.addMnemonic(new Mnemonic(node, KeyCombination.valueOf("ctrl+alt+k")));
-   ```
-
-
-
-#### 提示信息
-
-> ToolTip，类似Html里的title
-
-```java
-Tooltip tooltip = new Tooltip("hello");
-tooltip.setShowDelay(Duration.millis(500));
-control.setTooltip(tooltip);
-```
-
-```xml
-<Button text="hello">
-    <tooltip>
-        <Tooltip autoFix="false" hideOnEscape="false" autoHide="true" x="100" text="你好" prefHeight="100" prefWidth="100" anchorX="-50" anchorY="-50" anchorLocation="CONTENT_BOTTOM_LEFT">
-                        <graphic>
-                            <ImageView>
-                                <Image url="@../images/archlinux.png"/>
-                            </ImageView>
-                        </graphic>
-                    </Tooltip>
-    </tooltip>
-</Button>
-```
-
-
-
-#### 图片操作
-
-1. 监听器
-
-   > 监听器有errorProperty、exceptionProperty、progressProperty
-
-2. 形状操作
-
-   ```xml
-   <ImageView fitHeight="160" fitWidth="250" fx:id="image">
-       <!--剪切-->
-       <clip>
-           <Rectangle arcWidth="20" arcHeight="20" width="${image.fitWidth}" height="${image.fitHeight}" />
-       </clip>
-       <cursor>
-           <ImageCursor fx:constant="MOVE"/>
-       </cursor>
-       <!--smooth：缩放是是否降低质量， preserveRatio是否保持比例，backgroundLoading是否后台加载-->
-       <Image  url="@../images/gaomu.jpg" smooth="false" preserveRatio="true" backgroundLoading="true" />
-       <!--minX和minY相当于坐标，height和width是大小-->
-       <viewport>
-           <Rectangle2D height="300" width="600" minX="400" minY="400"/>
-       </viewport>
-   </ImageView>
-   ```
-
-3. 操作图片像素
-
-   - 获取图片像素
-
-     ```java
-     Image image = new Image(Objects.requireNonNull(getClass().getResource("images/gaomu.jpg")).toExternalForm());
-     PixelReader pixelReader = image.getPixelReader();
-     byte[] bytes = new byte[10 * 10 * 4];
-     pixelReader.getPixels(100, 100, 10, 10, PixelFormat.getByteBgraPreInstance(), bytes, 0, 10 * 4);
-     for (int i = 0; i < bytes.length; i += 4) {
-         System.out.println("R:" + (bytes[i] & 0xff));
-         System.out.println("G:" + (bytes[i + 1] & 0xff));
-         System.out.println("B:" + (bytes[i + 2] & 0xff));
-         System.out.println("O:" + (bytes[i + 3] & 0xff));
-     }	
-     
-     int[] ints = new int[10 * 10];
-     pixelReader.getPixels(100, 100, 10, 10, PixelFormat.getIntArgbPreInstance(), ints, 0, 10);
-     for (int i = 0; i < ints.length; i++) {
-         System.out.println("R:" + (ints[i] >> 24 & 0xff));
-         System.out.println("G:" + (ints[i] >> 16 & 0xff));
-         System.out.println("B:" + (ints[i] >> 8 & 0xff));
-         System.out.println("O:" + (ints[i] & 0xff));
-     }
-     ```
-
-   - 写入图片像素
-
-     ```java
-     WritableImage writableImage = new WritableImage(10, 10);
-     PixelWriter pixelWriter = writableImage.getPixelWriter();
-     pixelWriter.setArgb(5, 5, 0);
-     ```
-
-
-
-
-#### 设置文本框背景提示信息
-
-> 相当于Html里的placeholder
-
-```java
-textInputControl.setPromptText("请输入六位密码");	
-```
-
-
-
-#### 事件
-
-- 事件调用
-
-  > 激发node的与event相关的事件
-
-  ```java
-  Event.fireEvent(node, event);
-  ```
-
-- 事件消费
-
-  > 被消费的事件无法被传递，阻止冒泡这种
-
-  ```java
-  event.consume();
-  ```
-
-  
-
-
-
-#### JavaFX多线程
-
-> 某些敏感操作只有使用JavaFX的多线程才能完成
->
-> [单线程在这](##Platform)
-
-```java
-ScheduledService<Integer> scheduledService = new ScheduledService<>() {
-
-    private int count;
-
-    @Override
-    protected Task<Integer> createTask() {
-        return new Task<>() {
-            @Override
-            protected void updateValue(Integer value) {
-                if (value == 2){
-                    cancel();
-                    //不能在call方法里关闭stage
-                    stage.close();
-                }
-            }
-
-            @Override
-            protected Integer call() {
-                System.out.println(count++);
-                return count;
-            }
-        };
-    }
-};
-scheduledService.setPeriod(Duration.seconds(1));
-scheduledService.start();
-```
-
-
-
-#### 设置展示排版
-
-```java
-labeled.setContentDisplay(ContentDisplay.RIGHT);
-```
-
-
-
-#### PropertyChangeSupport
-
-> 和SimpleStringProperty，SimpleIntegerProperty等类似，但这是以map的方式存储，且能存储旧值和新值
-
-
-
-#### 三目运算When
-
-```java
-SimpleBooleanProperty a = new SimpleBooleanProperty(true);
-When when = new When(a);
-NumberBinding otherwise = when.then(10).otherwise(20);
-System.out.println(otherwise.getValue());
-```
-
-
-
-#### 创建永久置顶的窗口
-
-> javafx的stage.setAlwaysOnTop()方法没有用
-
-添加swing依赖
-
-```xml
-<dependency>
-    <groupId>org.openjfx</groupId>
-    <artifactId>javafx-swing</artifactId>
-    <version>17.0.2</version>
-</dependency>
-```
-
-需要在**module-info.java**文件里导包
-
-```java
-requires javafx.swing;
-```
-
-工具包
-
-```java
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
-
-import javax.swing.*;
-
-/**
- * @author 肖嘉威
- * @email xjw580@qq.com
- * @date 2023/2/8 下午10:42
- */
-public class TopStageUtil {
-
-    /**
-     * 创建永久置顶的窗口
-     * @param title
-     * @param scene
-     * @param width
-     * @param height
-     */
-    public static void createTopWindow(String title, Scene scene, int width, int height){
-        SwingUtilities.invokeLater(() -> initAndShowGUI(title, scene, width, height));
-        new Stage().setAlwaysOnTop();
-    }
-
-    private static void initAndShowGUI(String title, Scene scene, int width, int height) {
-        JFrame frame = new JFrame(title);
-        frame.setSize(width, height);
-        final JFXPanel fxPanel = new JFXPanel();
-        frame.add(fxPanel);
-        frame.setAlwaysOnTop(true);
-        frame.setVisible(true);
-        Platform.runLater(() -> initFX(fxPanel, scene));
-    }
-
-    private static void initFX(JFXPanel fxPanel, Scene scene) {
-        fxPanel.setScene(scene);
-    }
-}
-```
-
-
-
-#### 设置窗口圆角
-
-```java
-scene.setFill(Paint.valueOf("#FFFFFF00"));
-stage.initStyle(StageStyle.TRANSPARENT);
-```
-
-```xml
-<AnchorPane style="-fx-background-color: #366ACE;-fx-background-radius: 30"></AnchorPane>
-```
-
-
-
-## 三、Controller
+## 五、Controller
 
 1. @FXML
 
@@ -1135,7 +358,7 @@ stage.initStyle(StageStyle.TRANSPARENT);
 
 
 
-## 四、FXML
+## 六、FXML
 
 ### 布局
 
@@ -1427,6 +650,28 @@ stage.initStyle(StageStyle.TRANSPARENT);
 
 ![titledpane](https://zergqueen.gitee.io/images/factorio/titledpane.png)
 
+**样式**
+
+```css
+.titled-pane{
+    -fx-padding: 0;
+    -fx-border-color: white;
+}
+.titled-pane .title {
+    /*-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #dc143c, #32cd32);*/
+    -fx-background-insets: 2.5, 1, 2;
+    -fx-background-radius: 5;
+    -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
+}
+.titled-pane .title:hover {
+    -fx-background-color: #d9d8d8;
+}
+.titled-pane .content{
+    -fx-border-color: #d9d8d8;
+    -fx-border-radius: 10;
+}
+```
+
 
 
 #### Accordion
@@ -1549,6 +794,18 @@ alert.show();
 #### `TextField`
 
 #### `PasswordField`
+
+#### `Popup`
+
+> 类似tooltip，下拉列表中的悬浮窗
+
+```java
+Popup popup = new Popup();
+popup.getContent().add(new VBox(new Label("1"), new Label("2")));
+popup.show(stage);
+```
+
+![popup_demo](https://zergqueen.gitee.io/images/myblog/javafx/popup.png)
 
 #### `Lable`
 
@@ -1856,7 +1113,7 @@ public class TapApplication {
 
 ![textarea](https://zergqueen.gitee.io/images/factorio/textarea.png)
 
-设置过滤器
+设置字符过滤器
 
 ```java
 TextArea textArea = new TextArea();
@@ -1959,6 +1216,62 @@ textArea.setTextFormatter(new TextFormatter<>(change -> {
 ```
 
 ![comboboxdemo](https://zergqueen.gitee.io/images/myblog/javafx/comboboxdemo.png)
+
+**样式**
+
+```css
+/*主体左边部分*/
+.combo-box .list-cell {
+    -fx-alignment: CENTER;
+    -fx-background-color: transparent;
+    -fx-text-fill: -fx-text-base-color;
+}
+/*popup中cell容器*/
+.combo-box-popup .list-view {
+    -fx-padding: 3 0 3 3;
+    -fx-background-color: white, white;
+    -fx-background-radius: 0 0 5 5;
+    -fx-effect: dropshadow( three-pass-box , #cae1ff , 10, 0 , 0 , 0 );
+}
+/*popup中cell*/
+.combo-box-popup .list-view .list-cell {
+    -fx-alignment: CENTER;
+    -fx-pref-height: 30;
+    -fx-padding: 0;
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+}
+/*popup中cell选中*/
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover {
+    -fx-background-color: #0075FF;
+    -fx-text-fill: white;
+}
+/*popup中cell经过*/
+.combo-box-popup .list-view .list-cell:filled:hover
+{
+    /*popup label hover*/
+    -fx-background-color: #cae1ff;
+}
+/*主体*/
+.combo-box-base {
+    -fx-background-color: #ecf5fc;
+    -fx-background-radius: 4;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(gaussian, rgba(128, 128, 128, 0.67), 5, 0, 1, 1);
+}
+/*主体经过*/
+.combo-box-base:hover
+{
+    -fx-background-color: #c7e3fa;
+    -fx-effect: dropshadow(gaussian, rgba(128, 128, 128, 0.67), 10, 0, 3, 3);
+}
+/*主体焦点*/
+.combo-box-base:focused {
+    -fx-background-color: #c7e3fa;
+    -fx-border-color: rgb(128, 128, 128);
+    -fx-effect: none;
+}
+```
 
 
 
@@ -2087,6 +1400,26 @@ public class TestDemoController implements Initializable {
 
 ![progressbar](https://zergqueen.gitee.io/images/myblog/javafx/progressbar.png)
 
+**样式**
+
+```css
+.progress-bar {
+    -fx-accent: #0075FF;
+    -fx-pref-height: 4;
+}
+.progress-bar .bar {
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+.progress-bar > .track {
+    -fx-border-radius: 0;
+    -fx-background-radius: 0;
+    -fx-text-box-border: transparent;
+    -fx-control-inner-background: transparent;
+    -fx-background-color: transparent;
+}
+```
+
 
 
 #### `ScrollBar`
@@ -2096,6 +1429,62 @@ public class TestDemoController implements Initializable {
 ```xml
 <!--unitIncrement每次增加或减少的值-->
 <ScrollBar unitIncrement="10" maxWidth="150" />
+```
+
+**样式**
+
+```css
+.scroll-bar:horizontal .track,
+.scroll-bar:vertical .track{
+    -fx-background-color :transparent;
+    -fx-border-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-border-radius :2.0em;
+}
+.scroll-bar:horizontal .increment-button ,
+.scroll-bar:horizontal .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 0.0 10.0 0.0;
+
+}
+.scroll-bar:vertical .increment-button ,
+.scroll-bar:vertical .decrement-button {
+    -fx-background-color :transparent;
+    -fx-background-radius : 0.0em;
+    -fx-padding :0.0 10.0 0.0 0.0;
+
+}
+.scroll-bar .increment-arrow,
+.scroll-bar .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.15em 0.0;
+}
+.scroll-bar:vertical .increment-arrow,
+.scroll-bar:vertical .decrement-arrow{
+    -fx-shape : " ";
+    -fx-padding :0.0 0.15em;
+}
+.scroll-bar:horizontal .thumb,
+.scroll-bar:vertical .thumb {
+    -fx-background-color :derive(#0075FF,60.0%);
+    -fx-background-insets : 5, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+.scroll-bar:horizontal .thumb:hover,
+.scroll-bar:vertical .thumb:hover {
+    -fx-background-color :derive(#0075FF,0%);
+    -fx-background-insets : 2, 0.0, 0.0;
+    -fx-background-radius : 2.0em;
+}
+.scroll-bar{
+    -fx-background-color:derive(#cae1ff,0%);
+    -fx-background-insets: 5, 0, 0;
+    -fx-background-radius: 2em;
+}
+.scroll-bar:hover{
+    -fx-background-insets: 2, 0, 0;
+}
 ```
 
 
@@ -2428,7 +1817,799 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 
 
-## 五、Demo
+## 七、其他
+
+### Screen
+
+- 获取主屏幕信息
+
+    ```java
+    Screen.getPrimary() 
+    ```
+
+- 获取所有屏幕信息
+
+    ```java
+    Screen.getScreens()
+    ```
+
+
+
+### 剪切板
+
+```java
+Clipboard systemClipboard = Clipboard.getSystemClipboard();
+KeyCodeCombination keyCodeCombination = new KeyCodeCombination(KeyCode.V, KeyCodeCombination.CONTROL_ANY);
+scene.getAccelerators().put(keyCodeCombination, () -> {
+//            获取剪切板内容
+    System.out.println(systemClipboard.getString());
+    List<File> files = systemClipboard.getFiles();
+    for (File file : files) {
+        System.out.println(file.getAbsolutePath());
+    }
+    System.out.println(systemClipboard.getImage());
+});
+//        放入内容到剪切板
+ClipboardContent clipboardContent = new ClipboardContent();
+clipboardContent.putString("hello");
+systemClipboard.setContent(clipboardContent);
+//        清空剪切板
+systemClipboard.clear();
+```
+
+
+
+### 文件窗口
+
+```java
+public class FileComponentController {
+
+    @FXML
+    protected void select(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择单个文件");
+        fileChooser.setInitialDirectory(new File("/home/zerg/Downloads/chrome"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("图片", "*.jpg", "*.png"),
+                new FileChooser.ExtensionFilter("视频", "*.mkv", "*.mp4")
+        );
+        File chooseFile = fileChooser.showOpenDialog(new Stage());
+        System.out.println(chooseFile == null? "" : chooseFile.getAbsolutePath());
+    }
+    @FXML
+    protected void multipleSelect(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择多个文件");
+        fileChooser.setInitialDirectory(new File("/home/zerg/Downloads/chrome"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("图片", "*.jpg", "*.png"),
+                new FileChooser.ExtensionFilter("视频", "*.mkv", "*.mp4")
+        );
+        List<File> chooseFiles = fileChooser.showOpenMultipleDialog(new Stage());
+        System.out.println(chooseFiles == null? "" : chooseFiles.size());
+    }
+
+    @FXML
+    protected void saveFile(){
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("保存文件");
+        fileChooser.setInitialDirectory(new File("/home/zerg/Desktop"));
+        File file = fileChooser.showSaveDialog(new Stage());
+        if (file == null){
+            return;
+        }
+        try(FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write("你好");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    protected void dirsSelect(){
+        DirectoryChooser directoryChooser = new DirectoryChooser();
+        directoryChooser.setTitle("目录选择");
+        File file = directoryChooser.showDialog(new Stage());
+        System.out.println(file == null? "" : file.getAbsolutePath());
+    }
+}
+```
+
+
+
+### 监听器
+
+> 所有带property的属性都可以添加监听器
+
+1. **文本框文字改变监听器**
+
+    ```java
+    password.textProperty().addListener((observable, oldValue, newValue) -> {
+    	System.out.println(observable.getValue());
+    });
+    ```
+
+2. **文本框选择文字监听器**
+
+    ```java
+    password.selectedTextProperty().addListener((observable, oldValue, newValue) -> {
+    	System.out.println(observable.getValue());
+    });
+    ```
+
+3. **集合监听器**
+
+    ```java
+    //重要!!!重写call方法可以监听property内部值的更新，call方法返回的Observable数组里的property的值的改变可以被监听到
+    SimpleListProperty<SimpleStringProperty> list = new SimpleListProperty<>(FXCollections.observableArrayList(param -> {
+        System.out.println("call");
+        return new Observable[]{param};
+    }));
+    list.addListener((ListChangeListener<SimpleStringProperty>) c -> {
+        System.out.println("c:" + c);
+        while (c.next()){
+            System.out.println("wasUpdated:" +c.wasUpdated());
+        }
+    });
+    list.addListener((observable, oldValue, newValue) -> {
+        System.out.println("newValue:" + newValue);
+    });
+    SimpleStringProperty s1 = new SimpleStringProperty("hello");
+    list.add(s1);
+    System.out.println();
+    s1.set("world");
+    System.out.println();
+    list.remove(0);
+    ```
+
+4. **键盘监听器**
+
+    > 判断是否是指定键
+
+    ```java
+    KeyCode.A.getName().equals(event.getCode().getName());
+    event.getCharacter//用于获取中文状态时的输入
+    ```
+
+    > 作用在输入框的监听器
+
+    ```java
+    setOnKeyTyped();
+    ```
+
+    > 某些无法获取焦点的控件可以通过监听鼠标点击然后强制获得焦点来监听键盘
+
+    ```java
+    requestFocus();
+    ```
+
+5. **鼠标监听器**
+
+    ```java
+    scene.setOnMouseClicked(event -> {
+    //            alt建是否按下
+        System.out.println(event.isAltDown());
+    //             点击次数
+        System.out.println(event.getClickCount());
+    //            右键是否按下
+        System.out.println(event.isSecondaryButtonDown());
+    });
+    ```
+
+6. **鼠标拖拽监听器**
+
+    - MouseDragOver
+
+        > 在node内按住左键且在node内移动时触发，**需要提前调用startFullDrag()**
+
+    - MouseDragReleased
+
+        > 在node内按住左键且释放左键时触发，**需要提前调用startFullDrag()**
+
+    - MouseDragEntered
+
+        > 在node内按住左键第一次移动时时触发，**需要提前调用startFullDrag()**
+
+    - MouseDragExited
+
+        > 在node内按住左键然后离开node或在node内释放左键时触发，**需要提前调用startFullDrag()**
+
+    - MouseDragged
+
+        > 在node内按住左键，然后只要移动且左键没释放就触发
+
+    ```java
+    @FXML
+    private Button dragButton;
+    //在目标内开始拖拽时调用，调用一次。如果调用了event.setDragDetect(true)则不需要拖拽
+    @FXML
+    protected void onDragDetected(MouseEvent event){
+        System.out.println("onDragDetected");
+     //使用此节点作为手势源启动完整的按下-拖动-释放手势
+        dragButton.startFullDrag();
+    }
+    
+    /**
+     * 配合startFullDrag()才能生效,onMouseDragReleased、onMouseDragEntered、onMouseDragExited也一样
+     * @param event
+     */
+    @FXML
+    protected void onMouseDragOver(MouseEvent event){
+        System.out.println("onMouseDragOver");
+    }
+    ```
+
+7. **拖拽监听器**
+
+    - OnDragDetected
+
+        > 定义在检测到拖动手势时要调用的函数。这是开始拖放操作的正确位置。
+
+    - OnDragDone
+
+        > 当此节点被拖拽后调用
+
+    - OnDragDropped
+
+        > 当拖拽东西到此节点里释放，**需要提前设置传输模式**，event.acceptTransferModes(TransferMode.COPY_OR_MOVE);
+
+    - OnDragEntered
+
+        > 当拖拽东西到此节点里时触发，此后在节点内移动不会再次触发，除非移出节点外又进来
+
+    - OnDragExited
+
+        > 当拖拽东西到此节点里释放或离开此节点时触发
+
+    - OnDragOver
+
+        > 当拖拽东西到此节点里移动触发
+
+8. **鼠标监听范围**
+
+    > 将范围由实体部分提升至占用部分，圆的占用部分为外接矩形
+
+    ```java
+    node.setPickOnBounds(true)
+    ```
+
+9. **阻止冒泡**
+
+    ```java
+    node.setMouseTransparent(true);
+    ```
+
+
+
+
+### 绑定
+
+> 对Property进行绑定，返回一个Binding
+
+- 单向绑定
+
+    > 注意：集合的单向绑定相当于双向绑定
+
+    ```java
+    property1.bind(property2)
+    ```
+
+- 双向绑定
+
+    ```java
+    property1.bindBiderectional(property2)
+    ```
+
+- 自绑定
+
+    ```java
+    SimpleIntegerProperty simpleIntegerProperty = new SimpleIntegerProperty(10);
+    IntegerBinding integerBinding = Bindings.createIntegerBinding(() -> {
+        if (simpleIntegerProperty.get() == 1) {
+            return 250;
+        } else if (simpleIntegerProperty.get() == 2) {
+            return 260;
+        }
+        return 0;
+    }, simpleIntegerProperty);
+    integerBinding.addListener((observable, oldValue, newValue) -> {
+        System.out.println("newValue:" + newValue);
+    });
+    simpleIntegerProperty.set(1);
+    ```
+
+- 嵌套绑定
+
+    ```java
+    Student student = new Student();
+    Address address = new Address();
+    address.setCity("changsha");
+    address.setProvince("hunan");
+    student.setAddress(address);
+    student.setName("lisi");
+    SimpleObjectProperty<Student> objectProperty = new SimpleObjectProperty<>(student);
+    StringBinding stringBinding = Bindings.selectString(objectProperty, "address", "province");
+    stringBinding.addListener((observable, oldValue, newValue) -> {
+        System.out.println("newValue:" + newValue);
+    });
+    address.setProvince("beijing");
+    ```
+
+    ```java
+    public class Student {
+        private String name;
+    
+        private final SimpleObjectProperty<Address> address = new SimpleObjectProperty<>();
+    
+        public String getName() {
+            return name;
+        }
+    
+        public void setName(String name) {
+            this.name = name;
+        }
+    
+        public Address getAddress() {
+            return address.get();
+        }
+    
+        public void setAddress(Address address) {
+            this.address.set(address);
+        }
+    //	必须    
+        public SimpleObjectProperty<Address> addressProperty(){
+            return address;
+        }
+    }
+    ```
+
+    ```java
+    public class Address {
+        private final SimpleStringProperty province = new SimpleStringProperty();
+    
+        private String city;
+    
+        public String getProvince() {
+            return province.get();
+        }
+    
+        public void setProvince(String province) {
+            this.province.set(province);
+        }
+    
+        public String getCity() {
+            return city;
+        }
+    
+        public void setCity(String city) {
+            this.city = city;
+        }
+    //	必须
+        public SimpleStringProperty provinceProperty(){
+            return province;
+        }
+    }
+    ```
+
+- 绑定计算
+
+    > 相当于vue里的计算属性
+    >
+    > 当a后者b发生改变时，c的值会发生改变。
+
+    ```java
+    SimpleIntegerProperty a = new SimpleIntegerProperty(1);
+    SimpleIntegerProperty b = new SimpleIntegerProperty(1);
+    NumberBinding c = a.add(b);//还有subtract()、divide()、multiply()、negate()、greaterThan()、lessThan()等方法
+    c.addListener((observable, oldValue, newValue) -> {
+        System.out.println("newValue:" + newValue);
+    });
+    ```
+
+- 自定义绑定器Binding
+
+    ```java
+    public class MyIntegerBinding extends IntegerBinding{
+    
+        private final SimpleIntegerProperty simpleIntegerProperty = new SimpleIntegerProperty();
+    
+        public MyIntegerBinding(int value) {
+            simpleIntegerProperty.set(value);
+        }
+    
+        @Override
+        protected int computeValue() {
+            return simpleIntegerProperty.get() + 25;
+        }
+    }
+    
+    MyIntegerBinding myIntegerBinding = new MyIntegerBinding(19);
+    myIntegerBinding.addListener((observable, oldValue, newValue) -> {});
+    new SimpleIntegerProperty().bind(myIntegerBinding);
+    ```
+
+
+
+
+### 自定义转换器
+
+> 转换器里的toString方法返回的值会经由cellFactory的updteTtem方法进行加工改造然后呈现到界面上
+
+```xml
+<ChoiceBox layoutX="40" layoutY="30" BorderPane.alignment="TOP_RIGHT" fx:id="choice">
+    <converter>
+        <StudentConverter/>
+    </converter>
+    <Student fx:value="zerg"/>
+    <Student fx:value="queen"/>
+    <Student fx:value="jack"/>
+</ChoiceBox>
+```
+
+```java
+public class StudentConverter extends StringConverter<Student> {
+    @Override
+    public String toString(Student object) {
+        return object == null? "" : object.getSimpleName();
+    }
+
+    @Override
+    public Student fromString(String string) {
+        Student student = new Student();
+        student.setName(string);
+        return student;
+    }
+}
+```
+
+
+
+### 加工器cellFactory（Callback）
+
+> 将由转换器返回的值加工改造呈现到界面
+
+```xml
+<ComboBox>
+    <cellFactory>
+        <MyCallback/>
+    </cellFactory>
+    <items>
+        <FXCollections fx:factory="observableArrayList">
+            <String fx:value="李四"/>
+        </FXCollections>
+    </items>
+</ComboBox>
+```
+
+```java
+public class MyCallback<P, T> implements Callback<ListView<P>, ListCell<String>> {
+
+    @Override
+    public ListCell<String> call(ListView<P> param) {
+        return new ListCell<>(){
+//                通过setGraphic方法将加工改造后的东西呈现到界面            
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                this.setGraphic(new Button(item));
+                super.updateItem(item, empty);
+            }
+        };
+    }
+}
+```
+
+![cellfactory](https://zergqueen.gitee.io/images/myblog/javafx/cellfactory.png)
+
+
+
+### ListCell
+
+四种特殊自带样式，[在这里](####ListView)
+
+> 自定义ListCell，可以通过重写updateItem、startEdit、commitEdit、cancelEdit等方法实现。
+
+
+
+### 设置占位符
+
+> 当没有其他东西时显示
+
+```xml
+<ComboBox>
+    <placeholder>
+        没有东西呢！
+    </placeholder>
+</ComboBox>
+```
+
+
+
+### managed、visible、opacity对比
+
+> managed为false表示此控件不受父类组件控制了，其占用的空间也会让出来，然后也看不见了。visble和opacity都不会腾出空间
+
+
+
+### 创建新光标
+
+> Cursor.cursor()需要一个绝对路径
+
+```java
+Cursor.cursor(Objects.requireNonNull(getClass().getResource("images/archlinux.png")).toExternalForm())
+```
+
+
+
+### 打开网址
+
+> 用默认浏览器打开网址（getHostServices()是Application类的实例方法）
+
+```java
+getHostServices().showDocument("xiaojiawei.club");
+```
+
+
+
+### 添加快捷键
+
+1. 绑定到按键（Linux上无法生效）
+
+    ```java
+    Button button = new Button();
+    button.setOnAction(event -> System.out.println("hello"));
+    scene.addMnemonic(new Mnemonic(button , new KeyCodeCombination(KeyCode.K, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)));
+    ```
+
+2. 不绑定到按键（推荐）
+
+    ```java
+    scene.getAccelerators().put(new KeyCodeCombination(KeyCode.K, KeyCombination.CONTROL_DOWN), () -> {
+    	System.out.println("hello");
+    });
+    ```
+
+3. 绑定到按键的第二种写法
+
+    ```java
+    scene.addMnemonic(new Mnemonic(node, KeyCombination.valueOf("ctrl+alt+k")));
+    ```
+
+
+
+### 提示信息
+
+> ToolTip，类似Html里的title
+
+```java
+Tooltip tooltip = new Tooltip("hello");
+tooltip.setShowDelay(Duration.millis(500));
+control.setTooltip(tooltip);
+```
+
+```xml
+<Button text="hello">
+    <tooltip>
+        <Tooltip autoFix="false" hideOnEscape="false" autoHide="true" x="100" text="你好" prefHeight="100" prefWidth="100" anchorX="-50" anchorY="-50" anchorLocation="CONTENT_BOTTOM_LEFT">
+                        <graphic>
+                            <ImageView>
+                                <Image url="@../images/archlinux.png"/>
+                            </ImageView>
+                        </graphic>
+                    </Tooltip>
+    </tooltip>
+</Button>
+```
+
+
+
+### 图片操作
+
+1. 监听器
+
+    > 监听器有errorProperty、exceptionProperty、progressProperty
+
+2. 形状操作
+
+    ```xml
+    <ImageView fitHeight="160" fitWidth="250" fx:id="image">
+        <!--剪切-->
+        <clip>
+            <Rectangle arcWidth="20" arcHeight="20" width="${image.fitWidth}" height="${image.fitHeight}" />
+        </clip>
+        <cursor>
+            <ImageCursor fx:constant="MOVE"/>
+        </cursor>
+        <!--smooth：缩放是是否降低质量， preserveRatio是否保持比例，backgroundLoading是否后台加载-->
+        <Image  url="@../images/gaomu.jpg" smooth="false" preserveRatio="true" backgroundLoading="true" />
+        <!--minX和minY相当于坐标，height和width是大小-->
+        <viewport>
+            <Rectangle2D height="300" width="600" minX="400" minY="400"/>
+        </viewport>
+    </ImageView>
+    ```
+
+3. 操作图片像素
+
+    - 获取图片像素
+
+        ```java
+        Image image = new Image(Objects.requireNonNull(getClass().getResource("images/gaomu.jpg")).toExternalForm());
+        PixelReader pixelReader = image.getPixelReader();
+        byte[] bytes = new byte[10 * 10 * 4];
+        pixelReader.getPixels(100, 100, 10, 10, PixelFormat.getByteBgraPreInstance(), bytes, 0, 10 * 4);
+        for (int i = 0; i < bytes.length; i += 4) {
+            System.out.println("R:" + (bytes[i] & 0xff));
+            System.out.println("G:" + (bytes[i + 1] & 0xff));
+            System.out.println("B:" + (bytes[i + 2] & 0xff));
+            System.out.println("O:" + (bytes[i + 3] & 0xff));
+        }	
+        
+        int[] ints = new int[10 * 10];
+        pixelReader.getPixels(100, 100, 10, 10, PixelFormat.getIntArgbPreInstance(), ints, 0, 10);
+        for (int i = 0; i < ints.length; i++) {
+            System.out.println("R:" + (ints[i] >> 24 & 0xff));
+            System.out.println("G:" + (ints[i] >> 16 & 0xff));
+            System.out.println("B:" + (ints[i] >> 8 & 0xff));
+            System.out.println("O:" + (ints[i] & 0xff));
+        }
+        ```
+
+    - 写入图片像素
+
+        ```java
+        WritableImage writableImage = new WritableImage(10, 10);
+        PixelWriter pixelWriter = writableImage.getPixelWriter();
+        pixelWriter.setArgb(5, 5, 0);
+        ```
+
+
+
+
+### 设置文本框背景提示信息
+
+> 相当于Html里的placeholder
+
+```java
+textInputControl.setPromptText("请输入六位密码");	
+```
+
+
+
+### 事件
+
+- 事件调用
+
+    > 激发node的与event相关的事件
+
+    ```java
+    Event.fireEvent(node, event);
+    ```
+
+- 事件消费
+
+    > 被消费的事件无法被传递，阻止冒泡这种
+
+    ```java
+    event.consume();
+    ```
+
+    
+
+### JavaFX多线程
+
+> 某些敏感操作只有使用JavaFX的多线程才能完成
+>
+
+```java
+ScheduledService<Integer> scheduledService = new ScheduledService<>() {
+
+    private int count;
+
+    @Override
+    protected Task<Integer> createTask() {
+        return new Task<>() {
+            @Override
+            protected void updateValue(Integer value) {
+                if (value == 2){
+                    cancel();
+                    //不能在call方法里关闭stage
+                    stage.close();
+                }
+            }
+
+            @Override
+            protected Integer call() {
+                System.out.println(count++);
+                return count;
+            }
+        };
+    }
+};
+scheduledService.setPeriod(Duration.seconds(1));
+scheduledService.start();
+```
+
+
+
+### 设置展示排版方向
+
+```java
+labeled.setContentDisplay(ContentDisplay.RIGHT);
+```
+
+
+
+### PropertyChangeSupport
+
+> 和SimpleStringProperty，SimpleIntegerProperty等类似，但这是以map的方式存储，且能存储旧值和新值
+
+
+
+### 三目运算When
+
+```java
+SimpleBooleanProperty a = new SimpleBooleanProperty(true);
+When when = new When(a);
+NumberBinding otherwise = when.then(10).otherwise(20);
+System.out.println(otherwise.getValue());
+```
+
+
+
+### 设置窗口圆角
+
+```java
+scene.setFill(Paint.valueOf("#FFFFFF00"));
+stage.initStyle(StageStyle.TRANSPARENT);
+```
+
+```xml
+<AnchorPane style="-fx-background-color: #366ACE;-fx-background-radius: 30"></AnchorPane>
+```
+
+
+
+### Platform
+
+- JavaFX 应用程序终止
+
+    ```java
+    Platform.exit();
+    ```
+
+- 表示系统是否支持StageStyle.UNFIED
+
+    ```java
+    Platform.isSupported(UNIFIED_WINDOW)
+    ```
+
+- 在某些时候在 JavaFX 应用程序线程上运行指定的 Runnable
+
+    > **单线程，会堵塞主线程**
+
+    ```java
+    Platform.runLater(() -> {
+        stage.setHeight(500);
+    });
+    ```
+
+- 关闭所有窗口程序是否跟着关闭，默认为true
+
+    ```java
+    Platform.setImplicitExit(false);
+    ```
+
+    
+
+## 八、CSS
+
+
+
+## 九、高级特性
+
+### 动画
+
+## 十、Demo
 
 ### Login界面
 
@@ -2436,154 +2617,154 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 - FXML
 
-  ```xml
-  <?xml version="1.0" encoding="UTF-8"?>
-  
-  <?import javafx.scene.control.*?>
-  <?import javafx.scene.Group?>
-  <?import javafx.scene.layout.*?>
-  <?import javafx.scene.text.Font?>
-  <?import javafx.scene.text.Text?>
-  <BorderPane xmlns="http://javafx.com/javafx"
-              xmlns:fx="http://javafx.com/fxml"
-              fx:controller="club.xiaojiawei.controller.demo.LoginController"
-              prefHeight="600.0" prefWidth="400.0">
-      <background>
-          <Background>
-              <fills>
-                  <BackgroundFill fill="beige"/>
-              </fills>
-          </Background>
-      </background>
-      <center>
-          <Group BorderPane.alignment="CENTER">
-              <GridPane vgap="20" hgap="20" >
-                  <BorderPane GridPane.columnSpan="2">
-                      <center>
-                          <Text fill="forestgreen">
-                              <font>
-                                  <Font size="30">
-                                  </Font>
-                              </font>
-                              豆瓣
-                          </Text>
-                      </center>
-                  </BorderPane>
-                  <Label GridPane.rowIndex="3" GridPane.columnIndex="0">
-                      账号：
-                  </Label>
-                  <TextField fx:id="account" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="请输入邮箱或手机号" prefWidth="150"/>
-                  <Label GridPane.rowIndex="4" GridPane.columnIndex="0">
-                      密码：
-                  </Label>
-                  <PasswordField fx:id="password" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="请输入8位密码"/>
-                  <Text GridPane.rowIndex="5" GridPane.columnIndex="1" textAlignment="CENTER" fx:id="tip"/>
-                  <BorderPane GridPane.rowIndex="6" GridPane.columnSpan="2">
-                      <center>
-                          <Button onAction="#onLoginButtonCLick">
-                              登录
-                          </Button>
-                      </center>
-                  </BorderPane>
-              </GridPane>
-          </Group>
-      </center>
-  
-  </BorderPane>
-  ```
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    
+    <?import javafx.scene.control.*?>
+    <?import javafx.scene.Group?>
+    <?import javafx.scene.layout.*?>
+    <?import javafx.scene.text.Font?>
+    <?import javafx.scene.text.Text?>
+    <BorderPane xmlns="http://javafx.com/javafx"
+                xmlns:fx="http://javafx.com/fxml"
+                fx:controller="club.xiaojiawei.controller.demo.LoginController"
+                prefHeight="600.0" prefWidth="400.0">
+        <background>
+            <Background>
+                <fills>
+                    <BackgroundFill fill="beige"/>
+                </fills>
+            </Background>
+        </background>
+        <center>
+            <Group BorderPane.alignment="CENTER">
+                <GridPane vgap="20" hgap="20" >
+                    <BorderPane GridPane.columnSpan="2">
+                        <center>
+                            <Text fill="forestgreen">
+                                <font>
+                                    <Font size="30">
+                                    </Font>
+                                </font>
+                                豆瓣
+                            </Text>
+                        </center>
+                    </BorderPane>
+                    <Label GridPane.rowIndex="3" GridPane.columnIndex="0">
+                        账号：
+                    </Label>
+                    <TextField fx:id="account" GridPane.rowIndex="3" GridPane.columnIndex="1" promptText="请输入邮箱或手机号" prefWidth="150"/>
+                    <Label GridPane.rowIndex="4" GridPane.columnIndex="0">
+                        密码：
+                    </Label>
+                    <PasswordField fx:id="password" GridPane.rowIndex="4" GridPane.columnIndex="1" promptText="请输入8位密码"/>
+                    <Text GridPane.rowIndex="5" GridPane.columnIndex="1" textAlignment="CENTER" fx:id="tip"/>
+                    <BorderPane GridPane.rowIndex="6" GridPane.columnSpan="2">
+                        <center>
+                            <Button onAction="#onLoginButtonCLick">
+                                登录
+                            </Button>
+                        </center>
+                    </BorderPane>
+                </GridPane>
+            </Group>
+        </center>
+    
+    </BorderPane>
+    ```
 
 - Controller
 
-  ```java
-  package club.xiaojiawei.controller.demo;
-  
-  import club.xiaojiawei.LoginApplication;
-  import javafx.fxml.FXML;
-  import javafx.scene.Group;
-  import javafx.scene.Scene;
-  import javafx.scene.control.PasswordField;
-  import javafx.scene.control.TextField;
-  import javafx.scene.paint.Paint;
-  import javafx.scene.text.Text;
-  import javafx.stage.Stage;
-  
-  /**
-   * @author 肖嘉威
-   * @date 2023/2/4 下午2:36
-   */
-  public class LoginController {
-  
-      @FXML
-      private TextField account;
-  
-      @FXML
-      private PasswordField password;
-  
-      @FXML
-      private Text tip;
-  
-      @FXML
-      protected void onLoginButtonCLick(){
-          if ("root".equals(account.getText()) && "00000000".equals(password.getText())){
-              tip.setText("登录成功");
-              tip.setFill(Paint.valueOf("#339933"));
-              System.out.println("登录成功");
-              LoginApplication.stage.close();
-              Stage stage = new Stage();
-              stage.setScene(new Scene(new Group(), 600, 600));
-              stage.setTitle("主界面");
-              stage.show();
-          }else {
-              account.setText("");
-              password.setText("");
-              tip.setText("账号或密码错误");
-              tip.setFill(Paint.valueOf("#CC3333"));
-              System.out.println("登录失败");
-          }
-      }
-  }
-  ```
+    ```java
+    package club.xiaojiawei.controller.demo;
+    
+    import club.xiaojiawei.LoginApplication;
+    import javafx.fxml.FXML;
+    import javafx.scene.Group;
+    import javafx.scene.Scene;
+    import javafx.scene.control.PasswordField;
+    import javafx.scene.control.TextField;
+    import javafx.scene.paint.Paint;
+    import javafx.scene.text.Text;
+    import javafx.stage.Stage;
+    
+    /**
+     * @author 肖嘉威
+     * @date 2023/2/4 下午2:36
+     */
+    public class LoginController {
+    
+        @FXML
+        private TextField account;
+    
+        @FXML
+        private PasswordField password;
+    
+        @FXML
+        private Text tip;
+    
+        @FXML
+        protected void onLoginButtonCLick(){
+            if ("root".equals(account.getText()) && "00000000".equals(password.getText())){
+                tip.setText("登录成功");
+                tip.setFill(Paint.valueOf("#339933"));
+                System.out.println("登录成功");
+                LoginApplication.stage.close();
+                Stage stage = new Stage();
+                stage.setScene(new Scene(new Group(), 600, 600));
+                stage.setTitle("主界面");
+                stage.show();
+            }else {
+                account.setText("");
+                password.setText("");
+                tip.setText("账号或密码错误");
+                tip.setFill(Paint.valueOf("#CC3333"));
+                System.out.println("登录失败");
+            }
+        }
+    }
+    ```
 
 - Application
 
-  ```java
-  package club.xiaojiawei;
-  
-  import javafx.application.Application;
-  import javafx.fxml.FXMLLoader;
-  import javafx.scene.Scene;
-  import javafx.scene.image.Image;
-  import javafx.stage.Stage;
-  
-  import java.util.Objects;
-  
-  /**
-   * @author 肖嘉威
-   * @date 2023/2/4 下午2:38
-   */
-  public class LoginApplication extends Application {
-  
-      public static Stage stage;
-  
-      @Override
-      public void start(Stage primaryStage) throws Exception {
-          FXMLLoader fxmlLoader = new FXMLLoader(LayoutApplication.class.getResource("demo/login.fxml"));
-          Scene scene = new Scene(fxmlLoader.load(), 400, 600);
-          primaryStage.setMinWidth(300);
-          primaryStage.setMinHeight(400);
-          primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/douban.png"))));
-          primaryStage.setTitle("豆瓣登录");
-          primaryStage.setScene(scene);
-          primaryStage.show();
-          stage = primaryStage;
-      }
-  
-      public static void main(String[] args) {
-          LoginApplication.launch();
-      }
-  
-  }
-  ```
+    ```java
+    package club.xiaojiawei;
+    
+    import javafx.application.Application;
+    import javafx.fxml.FXMLLoader;
+    import javafx.scene.Scene;
+    import javafx.scene.image.Image;
+    import javafx.stage.Stage;
+    
+    import java.util.Objects;
+    
+    /**
+     * @author 肖嘉威
+     * @date 2023/2/4 下午2:38
+     */
+    public class LoginApplication extends Application {
+    
+        public static Stage stage;
+    
+        @Override
+        public void start(Stage primaryStage) throws Exception {
+            FXMLLoader fxmlLoader = new FXMLLoader(LayoutApplication.class.getResource("demo/login.fxml"));
+            Scene scene = new Scene(fxmlLoader.load(), 400, 600);
+            primaryStage.setMinWidth(300);
+            primaryStage.setMinHeight(400);
+            primaryStage.getIcons().add(new Image(Objects.requireNonNull(getClass().getResourceAsStream("images/douban.png"))));
+            primaryStage.setTitle("豆瓣登录");
+            primaryStage.setScene(scene);
+            primaryStage.show();
+            stage = primaryStage;
+        }
+    
+        public static void main(String[] args) {
+            LoginApplication.launch();
+        }
+    
+    }
+    ```
 
 
 
@@ -2591,40 +2772,40 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 - FXML
 
-  ```xml
-  <AnchorPane xmlns="http://javafx.com/javafx"
-              xmlns:fx="http://javafx.com/fxml"
-              fx:controller="club.xiaojiawei.controller.demo.DragDemoController"
-              prefHeight="400.0" prefWidth="600.0">
-      <ImageView fitWidth="100" preserveRatio="true" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" fx:id="imageView">
-          <cursor>
-              <ImageCursor fx:constant="MOVE"/>
-          </cursor>
-          <Image url="@../images/people.jpg"/>
-      </ImageView>
-  </AnchorPane>
-  ```
+    ```xml
+    <AnchorPane xmlns="http://javafx.com/javafx"
+                xmlns:fx="http://javafx.com/fxml"
+                fx:controller="club.xiaojiawei.controller.demo.DragDemoController"
+                prefHeight="400.0" prefWidth="600.0">
+        <ImageView fitWidth="100" preserveRatio="true" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" fx:id="imageView">
+            <cursor>
+                <ImageCursor fx:constant="MOVE"/>
+            </cursor>
+            <Image url="@../images/people.jpg"/>
+        </ImageView>
+    </AnchorPane>
+    ```
 
 - Controller
 
-  ```java
-  public class DragDemoController {
-      @FXML
-      private ImageView imageView;
-  
-      private double x, y;
-      @FXML
-      protected void onMousePressed(MouseEvent event){
-          x = event.getX();
-          y = event.getY();
-      }
-      @FXML
-      protected void onMouseDragged(MouseEvent event){
-          imageView.setLayoutX(event.getSceneX() - x);
-          imageView.setLayoutY(event.getSceneY() - y);
-      }
-  }
-  ```
+    ```java
+    public class DragDemoController {
+        @FXML
+        private ImageView imageView;
+    
+        private double x, y;
+        @FXML
+        protected void onMousePressed(MouseEvent event){
+            x = event.getX();
+            y = event.getY();
+        }
+        @FXML
+        protected void onMouseDragged(MouseEvent event){
+            imageView.setLayoutX(event.getSceneX() - x);
+            imageView.setLayoutY(event.getSceneY() - y);
+        }
+    }
+    ```
 
 
 
@@ -2634,116 +2815,116 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 - FXML
 
-  ```xml
-  <BorderPane xmlns="http://javafx.com/javafx"
-              xmlns:fx="http://javafx.com/fxml"
-              fx:controller="club.xiaojiawei.controller.demo.DragFileController"
-              stylesheets="@../css/dragFile.css"
-              prefHeight="400.0" prefWidth="600.0">
-      <center>
-          <Label styleClass="drag_label"  fx:id="label" text="拖拽文件至此" contentDisplay="TOP"  onDragOver="#onDragOver" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered" onDragExited="#onDragExited">
-              <graphic>
-                  <ImageView>
-                      <Image  url="@../images/add.png"/>
-                  </ImageView>
-              </graphic>
-          </Label>
-      </center>
-      <top>
-          <ImageView fitWidth="100" fitHeight="100" onDragDetected="#onDragDetected" fx:id="imageView" onDragDone="#onDragDone">
-              <Image url="@../images/douban.png"/>
-          </ImageView>
-      </top>
-  </BorderPane>
-  ```
+    ```xml
+    <BorderPane xmlns="http://javafx.com/javafx"
+                xmlns:fx="http://javafx.com/fxml"
+                fx:controller="club.xiaojiawei.controller.demo.DragFileController"
+                stylesheets="@../css/dragFile.css"
+                prefHeight="400.0" prefWidth="600.0">
+        <center>
+            <Label styleClass="drag_label"  fx:id="label" text="拖拽文件至此" contentDisplay="TOP"  onDragOver="#onDragOver" onDragDropped="#onDragDropped" onDragEntered="#onDragEntered" onDragExited="#onDragExited">
+                <graphic>
+                    <ImageView>
+                        <Image  url="@../images/add.png"/>
+                    </ImageView>
+                </graphic>
+            </Label>
+        </center>
+        <top>
+            <ImageView fitWidth="100" fitHeight="100" onDragDetected="#onDragDetected" fx:id="imageView" onDragDone="#onDragDone">
+                <Image url="@../images/douban.png"/>
+            </ImageView>
+        </top>
+    </BorderPane>
+    ```
 
 - Controller
 
-  ```java
-  public class DragFileController {
-  
-      @FXML
-      protected void onDragOver(DragEvent event){
-          if (event.getGestureSource() != label) {
-  //            设置传输模式
-              event.acceptTransferModes(TransferMode.ANY);
-          }
-      }
-  
-      @FXML
-      private Label label;
-  
-      @FXML
-      protected void onDragDropped(DragEvent event){
-          Dragboard db = event.getDragboard();
-          boolean success = false;
-          if (db.hasFiles()) {
-              StringBuilder stringBuilder = new StringBuilder();
-              for (File file : db.getFiles()) {
-                  stringBuilder.append(file.getName());
-                  stringBuilder.append("\n");
-              }
-              label.setText(stringBuilder.toString());
-              success = true;
-          }else if (db.hasString() && db.getString().matches("^https|http.*")){
-              Image image = new Image(db.getString());
-              ImageView imageView1 = new ImageView(image);
-              imageView1.setFitWidth(220);
-              imageView1.setPreserveRatio(true);
-              label.setGraphic(imageView1);
-          }
-  //        表示已经完成传输
-          event.setDropCompleted(success);
-      }
-  
-      @FXML
-      private ImageView imageView;
-      @FXML
-      protected void onDragDetected(MouseEvent event){
-          Dragboard dragboard = imageView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
-          ClipboardContent clipboardContent = new ClipboardContent();
-          clipboardContent.putFiles(List.of(new File("/home/zerg/Desktop/javafx笔记.md")));
-          WritableImage writableImage = new WritableImage(100, 100);
-  //        截图
-          imageView.snapshot(new SnapshotParameters(), writableImage);
-          clipboardContent.putImage(writableImage);
-          dragboard.setContent(clipboardContent);
-      }
-  
-      @FXML
-      protected void onDragDone(DragEvent event){
-          if (event.getTransferMode() == TransferMode.COPY || event.getTransferMode() == TransferMode.MOVE){
-              imageView.setImage(null);
-          }
-      }
-  
-      @FXML
-      protected void onDragEntered(){
-          label.getStyleClass().add("focus_drag");
-      }
-  
-      @FXML
-      protected void onDragExited(){
-          label.getStyleClass().remove("focus_drag");
-      }
-  }
-  ```
+    ```java
+    public class DragFileController {
+    
+        @FXML
+        protected void onDragOver(DragEvent event){
+            if (event.getGestureSource() != label) {
+    //            设置传输模式
+                event.acceptTransferModes(TransferMode.ANY);
+            }
+        }
+    
+        @FXML
+        private Label label;
+    
+        @FXML
+        protected void onDragDropped(DragEvent event){
+            Dragboard db = event.getDragboard();
+            boolean success = false;
+            if (db.hasFiles()) {
+                StringBuilder stringBuilder = new StringBuilder();
+                for (File file : db.getFiles()) {
+                    stringBuilder.append(file.getName());
+                    stringBuilder.append("\n");
+                }
+                label.setText(stringBuilder.toString());
+                success = true;
+            }else if (db.hasString() && db.getString().matches("^https|http.*")){
+                Image image = new Image(db.getString());
+                ImageView imageView1 = new ImageView(image);
+                imageView1.setFitWidth(220);
+                imageView1.setPreserveRatio(true);
+                label.setGraphic(imageView1);
+            }
+    //        表示已经完成传输
+            event.setDropCompleted(success);
+        }
+    
+        @FXML
+        private ImageView imageView;
+        @FXML
+        protected void onDragDetected(MouseEvent event){
+            Dragboard dragboard = imageView.startDragAndDrop(TransferMode.COPY_OR_MOVE);
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putFiles(List.of(new File("/home/zerg/Desktop/javafx笔记.md")));
+            WritableImage writableImage = new WritableImage(100, 100);
+    //        截图
+            imageView.snapshot(new SnapshotParameters(), writableImage);
+            clipboardContent.putImage(writableImage);
+            dragboard.setContent(clipboardContent);
+        }
+    
+        @FXML
+        protected void onDragDone(DragEvent event){
+            if (event.getTransferMode() == TransferMode.COPY || event.getTransferMode() == TransferMode.MOVE){
+                imageView.setImage(null);
+            }
+        }
+    
+        @FXML
+        protected void onDragEntered(){
+            label.getStyleClass().add("focus_drag");
+        }
+    
+        @FXML
+        protected void onDragExited(){
+            label.getStyleClass().remove("focus_drag");
+        }
+    }
+    ```
 
 - CSS
 
-  ```css
-  .drag_label{
-      -fx-font-size: 18;
-      -fx-border-width: 3;
-      -fx-border-insets: -90;
-      -fx-border-radius: 15;
-      -fx-cursor: hand;
-      -fx-border-color: gray;
-  }
-  .focus_drag{
-      -fx-border-color: #EB7171!important;
-  }
-  ```
+    ```css
+    .drag_label{
+        -fx-font-size: 18;
+        -fx-border-width: 3;
+        -fx-border-insets: -90;
+        -fx-border-radius: 15;
+        -fx-cursor: hand;
+        -fx-border-color: gray;
+    }
+    .focus_drag{
+        -fx-border-color: #EB7171!important;
+    }
+    ```
 
 
 
@@ -2866,6 +3047,8 @@ public class ListCellApplication extends Application {
 }
 ```
 
-## 五、CSS
+## 
 
-## 六、打包
+## 十一、打包
+
+## 十二、自定义组件

@@ -1664,7 +1664,7 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 - **fx:constant**
 
-  > 获取该控件类的常量成为该控件，常量类型和控件类型可以不一样
+  > 获取该控件类的常量成为该控件
 
   ```xml
   <Student fx:constant="GOOD_STUDENT"/>
@@ -1672,13 +1672,13 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
   ```java
   public class Student {
-      public static final String GOOD_STUDENT = "李四";
+      public static final Student GOOD_STUDENT = null;
   }
   ```
 
 - **fx:value**
 
-  > 调用该控件类的静态valueOf方法，并将返回值变成该控件，返回值类型和控件类型可以不一样
+  > 调用该控件类的静态valueOf方法，并将返回值变成该控件
 
   ```xml
   <Student fx:value="李四"/>
@@ -1701,7 +1701,7 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 
 - **fx:factory**
 
-  > 调用该控件类的指定静态方法，并将返回值变成该控件，返回值类型和控件类型可以不一样
+  > 调用该控件类的指定静态方法，并将返回值变成该控件
 
   ```xml
   <Student fx:factory="createStudent"/>

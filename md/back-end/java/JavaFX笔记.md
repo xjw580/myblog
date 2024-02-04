@@ -2609,6 +2609,52 @@ stage.initStyle(StageStyle.TRANSPARENT);
 
 ### 动画
 
+- ##### FadeTransition
+
+  > 改变opacity
+
+- ##### FillTransition
+
+  > 改变填充颜色
+
+- ##### PathTransition
+
+  > 路径动画
+
+- ##### RorateTransition
+
+  > 旋转动画
+
+- ##### ScaleTransition
+
+  > 缩放动画
+
+- ##### StrokeTransition
+
+  > 边框动画
+
+- ##### TranslateTransition
+
+  > 位移动画
+
+- ##### ParallelTransition
+
+  > 并行动画
+
+- ##### SequentialTransition
+
+  > 串行动画
+
+- ##### PauseTransition
+
+  > 暂停动画（用处不大）
+
+### Effect
+
+- ##### DisplacementMap
+
+
+
 ## 十、Demo
 
 ### Login界面

@@ -1815,6 +1815,36 @@ objectListView.addEventHandler(ListView.EditEvent.ANY, event -> {
 </ComboBox>
 ```
 
+#### 构造方法传参
+
+```java
+public class MyPoint{
+
+    private final int x;
+
+    private final int y;
+// 没有指定defaultValue属性时，默认值为各类型的默认值，如int为0，引用类型为null
+    public MyPoint(@NamedArg("x") int x, @NamedArg(value = "y", defaultValue = "20") int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "MyPoint{" +
+                "x=" + x +
+                ", y=" + y +
+                '}';
+    }
+}
+```
+
+```xml
+<MyPoint x="10" y="30"/>
+<MyPoint x="10"/>
+<MyPoint />
+```
+
 
 
 ## 七、其他
@@ -3098,3 +3128,104 @@ public class ListCellApplication extends Application {
 ## 十一、打包
 
 ## 十二、自定义组件
+
+## 十三、多语言支持
+
+`PropertiesTest.java`
+
+```java
+package club.xiaojiawei.test;
+
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.util.ResourceBundle;
+
+/**
+ * @author 肖嘉威 xjw580@qq.com
+ * @date 2023/10/23 21:14
+ */
+public class PropertiesTest extends Application {
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    private static Stage stage;
+
+    @FXML void initialize(){
+        System.out.println("initialize");
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws IOException {
+        PropertiesTest.stage = primaryStage;
+        FXMLLoader loader = new FXMLLoader();
+        loader.setResources(ResourceBundle.getBundle("club.xiaojiawei.test.application"));
+        Parent root = loader.load(getClass().getResourceAsStream("PropertiesTest.fxml"));
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    public void changeEnglish(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        //        properties文件名：application.properties_us，处于club.xiaojiawei.test包下
+        loader.setResources(ResourceBundle.getBundle("club.xiaojiawei.test.application_us"));
+        Parent root = loader.load(getClass().getResourceAsStream("PropertiesTest.fxml"));
+        stage.getScene().setRoot(root);
+    }
+
+    public void changeChinese(ActionEvent actionEvent) throws IOException {
+        FXMLLoader loader = new FXMLLoader();
+        //        properties文件名：application.properties，处于club.xiaojiawei.test包下
+        loader.setResources(ResourceBundle.getBundle("club.xiaojiawei.test.application"));
+        Parent root = loader.load(getClass().getResourceAsStream("PropertiesTest.fxml"));
+        stage.getScene().setRoot(root);
+    }
+
+}
+```
+
+`PropertiesTest.fxml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="club.xiaojiawei.test.PropertiesTest"
+            prefHeight="400.0" prefWidth="600.0">
+    <HBox spacing="5">
+        <Label text="%version"/>
+        <Label text="1.0.0"/>
+        <HBox spacing="10">
+            <Button text="切换英文" onAction="#changeEnglish"/>
+            <Button text="切换中文" onAction="#changeChinese"/>
+        </HBox>
+    </HBox>
+</AnchorPane>
+```
+
+`application.properties`
+
+```properties
+version=版本
+```
+
+`application_us.properties`
+
+```properties
+version=version
+```
+
